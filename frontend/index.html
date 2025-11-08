@@ -2,48 +2,385 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <title>CertiPath - Accueil</title>
-    <link rel="stylesheet" href="css/home.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>X Iso - Gestion de la Conformité et Analyse des Risques</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
-  <body>
-    <header>
-      <div class="logo">X <span>iso</span></div>
-      <nav>
-        <ul>
-          <li><a href="#" class="active">Home</a></li>
-          <li><a href="#">Features</a></li>
-          <li><a href="#">Contacts</a></li>
-          <li><a href="#">Pricing</a></li>
-        </ul>
-      </nav>
-      <a href="register.html" class="btn-register">Register</a>
-    </header>
-
-    <section class="hero">
-      <div class="hero-text">
-        <h1>
-          Une seule <span>plateforme</span> pour<br />
-          Tout <span class="highlight">gérer</span> avec
-          <span class="conf">confiance.</span>
-        </h1>
-        <p>
-          Une solution tout-en-un pour gérer la conformité, la sécurité et les
-          audits.<br />
-          Connectez-vous, centralisez vos processus et garantissez la conformité
-          de votre organisation.
-        </p>
-
-        <div class="buttons">
-          <a href="#" class="btn-primary">Get Started</a>
-          <a href="#" class="btn-secondary">Our Pricing</a>
+  <body class="dark-theme">
+    <!-- Navigation -->
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="nav-logo">
+          <h2><i class="fas fa-shield-alt"></i> X Iso</h2>
         </div>
-
-        <p class="orgs">+100 organisations accompagnées dans leur conformité</p>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a href="index.html" class="nav-link active">Home</a>
+          </li>
+          <li class="nav-item">
+            <a href="#features" class="nav-link">Features</a>
+          </li>
+          <li class="nav-item">
+            <a href="#contacts" class="nav-link">Contacts</a>
+          </li>
+          <li class="nav-item">
+            <a href="#pricing" class="nav-link">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a href="login.html" class="nav-link btn-outline">Se connecter</a>
+          </li>
+          <li class="nav-item">
+            <a href="signup.html" class="nav-link btn-primary">Register</a>
+          </li>
+        </ul>
+        <div class="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </div>
       </div>
+    </nav>
 
-      <div class="hero-image">
-        <!-- Tu pourras ajouter ton image ou graphique ici -->
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            <span class="title-main">Simplifiez la conformité,</span>
+            <span class="title-accent">renforcez la sécurité</span>
+          </h1>
+          <p class="hero-description">
+            Une seule plateforme pour tout gérer avec confiance. Une solution
+            tout-en-un pour gérer la conformité, la sécurité et les audits.
+            Connectez-vous, contrôlez vos processus et garantissez la confiance
+            de votre organisation.
+          </p>
+          <div class="hero-buttons">
+            <a href="signup.html" class="btn btn-primary btn-large"
+              >Get Started</a
+            >
+            <a href="#pricing" class="btn btn-secondary btn-large"
+              >Our Pricing</a
+            >
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <span class="stat-number">+100</span>
+              <span class="stat-text"
+                >organisations accompagnées dans leur conformité</span
+              >
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <!-- floating cards removed per request -->
+          <div
+            class="hero-trust"
+            aria-hidden="true"
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 100%;
+            "
+          >
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 18px;
+                border-radius: 12px;
+                background: linear-gradient(
+                  180deg,
+                  rgba(255, 255, 255, 0.02),
+                  rgba(255, 255, 255, 0.01)
+                );
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+              "
+            >
+              <svg
+                width="64"
+                height="64"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 2L3 5v6c0 5 3.8 9.7 9 11 5.2-1.3 9-6 9-11V5l-9-3z"
+                  fill="#ffb400"
+                />
+                <path
+                  d="M9.5 12.5l2 2 4-4"
+                  stroke="#111"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <div>
+                <div style="font-weight: 700; color: #fff; font-size: 1.05rem">
+                  Certified Platform
+                </div>
+                <div
+                  style="color: rgba(255, 255, 255, 0.78); font-size: 0.9rem"
+                >
+                  ISO & Compliance
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
+
+    <!-- Conformity Standards Section -->
+    <section class="standards" id="features">
+      <div class="container">
+        <h2 class="section-title">Normes de Conformité Prises en Charge</h2>
+        <div class="standards-grid">
+          <div class="standard-card">
+            <div class="standard-icon">
+              <i class="fas fa-credit-card"></i>
+            </div>
+            <h3>PCI DSS</h3>
+            <p>
+              Norme de sécurité des données de l'industrie des cartes de
+              paiement
+            </p>
+          </div>
+          <div class="standard-card">
+            <div class="standard-icon">
+              <i class="fas fa-server"></i>
+            </div>
+            <h3>PCI SSF</h3>
+            <p>
+              Normes de sécurité des logiciels pour les solutions de paiement
+            </p>
+          </div>
+          <div class="standard-card">
+            <div class="standard-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>NIST</h3>
+            <p>
+              Cadre de cybersécurité de l'Institut national des normes et de la
+              technologie
+            </p>
+          </div>
+          <div class="standard-card">
+            <div class="standard-icon">
+              <i class="fas fa-user-secret"></i>
+            </div>
+            <h3>ANSSI</h3>
+            <p>
+              Référentiels de l'Agence nationale de la sécurité des systèmes
+              d'information
+            </p>
+          </div>
+          <div class="standard-card">
+            <div class="standard-icon">
+              <i class="fas fa-shield-virus"></i>
+            </div>
+            <h3>ISO 27001</h3>
+            <p>Système de management de la sécurité de l'information (SMSI)</p>
+          </div>
+          <div class="standard-card">
+            <div class="standard-icon">
+              <i class="fas fa-handshake"></i>
+            </div>
+            <h3>ISO 37001</h3>
+            <p>Système de management anti-corruption</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Risk Analysis Section -->
+    <section class="risk-analysis">
+      <div class="container">
+        <h2 class="section-title">Méthodologies d'Analyse de Risque</h2>
+        <div class="methodologies-grid">
+          <div class="methodology-card">
+            <div class="methodology-icon">
+              <i class="fas fa-chart-pie"></i>
+            </div>
+            <h3>EBIOS RM</h3>
+            <p>
+              Expression des Besoins et Identification des Objectifs de Sécurité
+              - Risk Manager
+            </p>
+          </div>
+          <div class="methodology-card">
+            <div class="methodology-icon">
+              <i class="fas fa-balance-scale"></i>
+            </div>
+            <h3>MEHARI</h3>
+            <p>
+              Méthode Harmonisée d'Analyse des Risques - Évaluation et
+              traitement des risques
+            </p>
+          </div>
+          <div class="methodology-card">
+            <div class="methodology-icon">
+              <i class="fas fa-project-diagram"></i>
+            </div>
+            <h3>OCTAVE</h3>
+            <p>
+              Operationally Critical Threat, Asset, and Vulnerability Evaluation
+            </p>
+          </div>
+          <div class="methodology-card">
+            <div class="methodology-icon">
+              <i class="fas fa-cogs"></i>
+            </div>
+            <h3>NIST RMF</h3>
+            <p>
+              Risk Management Framework - Cadre de gestion des risques du NIST
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Zero Trust Section -->
+    <section class="zero-trust">
+      <div class="container">
+        <div class="zero-trust-content">
+          <div class="zero-trust-text">
+            <h2>Modèle Zero Trust</h2>
+            <p>
+              Notre plateforme intègre nativement le modèle Zero Trust avec une
+              vérification continue de l'identité et des autorisations.
+            </p>
+            <ul class="zero-trust-features">
+              <li>
+                <i class="fas fa-check-circle"></i> Authentification
+                Multi-Facteurs (MFA)
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i> Vérification continue des
+                identités
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i> Contrôle d'accès basé sur
+                les rôles
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i> Surveillance en temps réel
+              </li>
+              <li>
+                <i class="fas fa-check-circle"></i> Chiffrement des données au
+                repos et en transit
+              </li>
+            </ul>
+          </div>
+          <div class="zero-trust-visual">
+            <div class="trust-circle">
+              <div class="circle-core">
+                <i class="fas fa-shield-alt"></i>
+                <span>Zero Trust</span>
+              </div>
+              <div class="circle-layer layer-1">
+                <span>Vérification Identité</span>
+              </div>
+              <div class="circle-layer layer-2">
+                <span>Contrôle Accès</span>
+              </div>
+              <div class="circle-layer layer-3">
+                <span>Surveillance Continue</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="pricing">
+      <div class="container">
+        <h2 class="section-title">Fonctionnalités principales</h2>
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-users"></i></div>
+            <h3>Gestion des Utilisateurs</h3>
+            <p>
+              Création de comptes RSSI et Auditeur avec gestion des rôles et
+              permissions.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-file-contract"></i></div>
+            <h3>Contrôles de Conformité</h3>
+            <p>
+              Accès aux référentiels complets avec suivi de la conformité en
+              temps réel.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-upload"></i></div>
+            <h3>Soumission d'Évidences</h3>
+            <p>
+              Upload sécurisé de documents avec métadonnées et statuts de
+              validation.
+            </p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-comments"></i></div>
+            <h3>Commentaires Collaboratifs</h3>
+            <p>
+              Échange entre RSSI et Auditeurs avec système de résolution des
+              points.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer" id="contacts">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3><i class="fas fa-shield-alt"></i> X Iso</h3>
+            <p>
+              Plateforme intégrée pour la gestion de la conformité réglementaire
+              et l'analyse de risque.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+              <li><i class="fas fa-envelope"></i> contact@xiso.com</li>
+              <li><i class="fas fa-phone"></i> +212 6 74 87 52 21</li>
+              <li><i class="fas fa-map-marker-alt"></i> Marrakech, Maroc</li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Liens rapides</h4>
+            <ul>
+              <li><a href="#features">Fonctionnalités</a></li>
+              <li><a href="#pricing">Tarifs</a></li>
+              <li><a href="#contacts">Contact</a></li>
+              <li><a href="login.html">Connexion</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 X Iso. Tous droits réservés.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
   </body>
 </html>

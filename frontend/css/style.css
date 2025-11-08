@@ -1,0 +1,1367 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary-color: #94a3b8;
+    --accent-color: #06d6a0;
+    --danger-color: #ef4444;
+    --warning-color: #f59e0b;
+    --success-color: #10b981;
+    
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    
+    --border-color: #334155;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+    
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+}
+
+body.dark-theme {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Navigation */
+.navbar {
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.nav-logo h2 {
+    color: var(--primary-color);
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.875rem;
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-tertiary);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 70px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(6, 214, 160, 0.1) 0%, transparent 50%);
+    z-index: 0;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.title-main {
+    display: block;
+    color: var(--text-primary);
+}
+
+.title-accent {
+    display: block;
+    color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.hero-stats {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.stat-text {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    max-width: 200px;
+}
+
+/* Hero Visual */
+.hero-visual {
+    position: relative;
+    height: 500px;
+}
+
+.floating-card {
+    position: absolute;
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    animation: float 6s ease-in-out infinite;
+    backdrop-filter: blur(10px);
+}
+
+.floating-card .card-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.floating-card h4 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.floating-card p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.card-1 {
+    top: 10%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.card-2 {
+    top: 40%;
+    right: 10%;
+    animation-delay: 2s;
+}
+
+.card-3 {
+    bottom: 10%;
+    left: 20%;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Standards Section */
+.standards {
+    padding: 6rem 0;
+    background: var(--bg-secondary);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+    color: var(--text-primary);
+}
+
+.standards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.standard-card {
+    background: var(--bg-primary);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.standard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.standard-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.standard-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.standard-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Risk Analysis Section */
+.risk-analysis {
+    padding: 6rem 0;
+    background: var(--bg-primary);
+}
+
+.methodologies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.methodology-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.methodology-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.methodology-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--accent-color);
+}
+
+.methodology-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.methodology-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Zero Trust Section */
+.zero-trust {
+    padding: 6rem 0;
+    background: var(--bg-secondary);
+}
+
+.zero-trust-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.zero-trust-text h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.zero-trust-text p {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.zero-trust-features {
+    list-style: none;
+}
+
+.zero-trust-features li {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-primary);
+}
+
+.zero-trust-features i {
+    color: var(--accent-color);
+}
+
+.zero-trust-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.trust-circle {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.circle-core {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+    z-index: 3;
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+.circle-layer {
+    position: absolute;
+    border-radius: 50%;
+    border: 2px dashed var(--border-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    text-align: center;
+    padding: 1rem;
+}
+
+.layer-1 {
+    width: 200px;
+    height: 200px;
+    z-index: 2;
+    animation: rotate 20s linear infinite;
+}
+
+.layer-2 {
+    width: 250px;
+    height: 250px;
+    z-index: 1;
+    animation: rotate 25s linear infinite reverse;
+}
+
+.layer-3 {
+    width: 300px;
+    height: 300px;
+    z-index: 0;
+    animation: rotate 30s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Features Section */
+.features {
+    padding: 6rem 0;
+    background: var(--bg-primary);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+}
+
+.feature-card {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid var(--border-color);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+    background: var(--bg-secondary);
+    padding: 4rem 0 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3, .footer-section h4 {
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.footer-section p, .footer-section li {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-muted);
+}
+
+/* Auth Pages */
+.auth-page {
+    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.auth-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 1200px;
+    width: 100%;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    min-height: 700px;
+    border: 1px solid var(--border-color);
+}
+
+.auth-card {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-decoration: none;
+    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.auth-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+    color: var(--text-secondary);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.form-group input,
+.form-group select {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.password-strength {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--bg-tertiary);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--danger-color);
+    transition: all 0.3s ease;
+}
+
+.strength-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    min-width: 50px;
+}
+
+.password-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.forgot-password {
+    font-size: 0.875rem;
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.role-description {
+    background: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-top: 0.5rem;
+    border-left: 3px solid var(--primary-color);
+}
+
+.role-description p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.checkbox-group {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-top: 0.25rem;
+    width: 16px;
+    height: 16px;
+}
+
+.checkbox-group label {
+    font-size: 0.875rem;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.auth-footer p {
+    color: var(--text-secondary);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.auth-background {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.background-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.shape-1 {
+    width: 200px;
+    height: 200px;
+    top: -50px;
+    right: -50px;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    bottom: 100px;
+    left: -50px;
+}
+
+.shape-3 {
+    width: 100px;
+    height: 100px;
+    bottom: -30px;
+    right: 100px;
+}
+
+.security-features {
+    position: relative;
+    z-index: 2;
+}
+
+.security-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.badge-icon {
+    font-size: 2rem;
+    opacity: 0.9;
+}
+
+.badge-text h4 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.badge-text p {
+    margin: 0.25rem 0 0 0;
+    opacity: 0.8;
+    font-size: 0.875rem;
+}
+
+.features-list {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+.features-list h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+}
+
+.feature-item i {
+    color: var(--accent-color);
+}
+
+/* MFA Section */
+.mfa-section {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-top: 1rem;
+    border-left: 4px solid var(--accent-color);
+}
+
+.mfa-header {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.mfa-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.mfa-header p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.otp-input {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: 0.5rem;
+}
+
+.btn-accent {
+    background: var(--accent-color);
+    color: white;
+}
+
+.btn-accent:hover {
+    background: #05c290;
+    transform: translateY(-1px);
+}
+
+/* Social Auth */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.auth-divider::before {
+    margin-right: 1rem;
+}
+
+.auth-divider::after {
+    margin-left: 1rem;
+}
+
+.social-auth {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.btn-social {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-social:hover {
+    background: var(--bg-tertiary);
+    transform: translateY(-1px);
+}
+
+.btn-google:hover {
+    border-color: #DB4437;
+    color: #DB4437;
+}
+
+.btn-microsoft:hover {
+    border-color: #0078D4;
+    color: #0078D4;
+}
+
+/* Button States */
+.btn-loader {
+    display: none;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: none;
+}
+
+/* Checkbox Custom */
+.checkbox-group input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 3px;
+    background: var(--bg-secondary);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkbox-group input[type="checkbox"]:checked {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.checkbox-group input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 12px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Theme tweaks: degraded black background + yellow logo + white/yellow accents */
+:root{
+  --accent-yellow: #ffb400;
+  --bg-dark-1: #000000;
+  --bg-dark-2: #07161a;
+  --text-main: #ffffff;
+  --text-muted: #cfcfcf;
+}
+
+/* Degraded black background for whole site / auth pages */
+body.dark-theme,
+.auth-page {
+  background: linear-gradient(120deg, var(--bg-dark-1) 0%, #041017 38%, var(--bg-dark-2) 100%);
+  color: var(--text-main);
+}
+
+/* Slight translucent panel for auth container so gradient shows */
+.auth-container {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+/* Logo text in yellow (both auth and nav when present) */
+.auth-header .logo,
+.nav-logo h1,
+.logo-mark,
+a.logo {
+  color: var(--accent-yellow) !important;
+  text-shadow: 0 6px 26px rgba(255,180,0,0.06);
+  font-weight:700;
+}
+
+/* icon in logo */
+.auth-header .logo i,
+.nav-logo i,
+.logo-mark i {
+  color: var(--accent-yellow) !important;
+}
+
+/* Main headings and body text: keep white, muted text softer */
+.auth-header h1,
+.auth-header p,
+.form-group label,
+.hero-title,
+.hero-description,
+.footer,
+.container,
+.stat-number {
+  color: var(--text-main);
+}
+.form-group label { color: var(--text-muted); }
+
+/* Accent color class */
+.accent,
+.title-accent,
+.badge-text h4,
+.auth-footer a {
+  color: var(--accent-yellow);
+  text-shadow: 0 0 10px rgba(255,180,0,0.06);
+}
+
+/* Buttons using yellow accent */
+.btn-primary,
+.btn-accent {
+  background: var(--accent-yellow);
+  color: #111;
+  border: 0;
+  box-shadow: 0 8px 30px rgba(255,180,0,0.06);
+}
+.btn-primary:hover,
+.btn-accent:hover {
+  filter: brightness(.96);
+  transform: translateY(-2px);
+}
+
+/* Links */
+a { color: var(--accent-yellow); }
+
+/* Inputs readable on dark bg (keep white inputs as in design) */
+.form-group input,
+.form-group select {
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* subtle glow for highlighted text */
+.accent { text-shadow: 0 0 14px rgba(255,180,0,0.08); }
+
+/* Responsive tweak */
+@media (max-width: 768px) {
+  .hero-title { font-size: clamp(20px, 6.6vw, 36px); white-space: normal; text-align: center; }
+  .auth-container { grid-template-columns: 1fr; min-height: auto; }
+}
+
+/* Override / Home color adjustments to match auth (yellow accents + degraded black background) */
+:root{
+  --accent-yellow: #ffb400; /* main accent */
+  --bg-dark-1: #000000;
+  --bg-dark-2: #041017;
+  --home-accent: var(--accent-yellow);
+}
+
+/* Hero: degraded black background like auth pages */
+.hero {
+  background: linear-gradient(120deg, var(--bg-dark-1) 0%, rgba(4,16,23,0.6) 40%, var(--bg-dark-2) 100%);
+}
+
+/* Nav logo / brand use yellow like auth */
+.nav-logo h2,
+.nav-logo h1,
+.nav-logo .logo-mark {
+  color: var(--home-accent);
+  text-shadow: 0 6px 26px rgba(255,180,0,0.06);
+  font-weight: 700;
+}
+
+/* Make title accent yellow */
+.title-accent {
+  display: inline-block;
+  color: var(--home-accent);
+  background: none;
+  -webkit-background-clip: none;
+  -webkit-text-fill-color: var(--home-accent);
+  text-shadow: 0 0 10px rgba(255,180,0,0.08);
+}
+
+/* hero title main color white */
+.title-main, .hero-title, .hero-description {
+  color: #ffffff;
+}
+
+/* floating visual highlight color -> yellow */
+.floating-card .card-icon {
+  color: var(--home-accent);
+  text-shadow: 0 8px 30px rgba(255,180,0,0.06);
+}
+
+/* stats use yellow for numbers */
+.stat-number {
+  color: var(--home-accent);
+}
+
+/* Links and small accents on home */
+.hero-buttons .btn-primary,
+a, .nav-link.active {
+  color: #111;
+  background: var(--home-accent);
+  border-color: rgba(255,180,0,0.06);
+  box-shadow: 0 8px 30px rgba(255,180,0,0.04);
+}
+
+/* subtle glow overlay for hero to match auth's scanline / cyber feel */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(transparent 48%, rgba(255,255,255,0.004) 50%, transparent 52%);
+  background-size: 100% 6px;
+  mix-blend-mode: overlay;
+  animation: scan 6s linear infinite;
+}
+
+/* ensure inputs on hero/cta remain readable */
+.form-group input,
+.form-group select {
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* responsive tweak keep one-line formatted title on wide screens but allow wrap on small */
+@media (max-width: 900px) {
+  .hero-title { white-space: normal; text-align: center; }
+  .hero-container { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+/* remove yellow highlight on home title / accents */
+.title-accent,
+.accent,
+.hero-title .accent {
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: unset !important;
+  text-shadow: none !important;
+}
+
+/* Fix: remove unwanted solid yellow boxes on nav/footer/quick links */
+.nav-link,
+.nav-menu a,
+.footer a,
+.footer-section a,
+.features-list a,
+.quick-link,
+.auth-header .logo {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--text-secondary) !important;
+  -webkit-text-fill-color: unset !important;
+  -webkit-background-clip: unset !important;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid transparent;
+}
+
+/* active nav: yellow text + subtle outline (no filled yellow) */
+.nav-link.active {
+  background: transparent !important;
+  color: var(--accent-yellow) !important;
+  border: 1px solid rgba(255,180,0,0.12);
+  box-shadow: 0 6px 20px rgba(255,180,0,0.03);
+}
+
+/* hover state: subtle translucent panel */
+.footer a:hover,
+.nav-link:hover,
+.nav-menu a:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.04);
+}
+
+/* remove highlight/mark styling if used */
+mark, .highlight {
+  background: none !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* footer quick-links inline style (clear boxed look) */
+.footer .links li a,
+.quick-links a {
+  display: inline-block;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0;
+  color: var(--text-secondary);
+}
+
+/* keep primary CTA buttons yellow */
+.btn-primary {
+  background: var(--accent-yellow);
+  color: #111;
+  border: 0;
+}
+
+/* Remove unwanted yellow boxes on small links (auth/footer/nav/quick-links) */
+.auth-card a,
+.auth-card .forgot-password,
+.auth-footer a,
+.footer .links a,
+.quick-links a,
+.features-list a,
+.nav-menu .nav-link,
+.nav-link,
+.mark,
+.highlight {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+  display: inline !important;
+  color: inherit !important;        /* use surrounding text color */
+  text-decoration: none !important; /* remove boxed underline look */
+}
+
+/* If you want link text to keep the yellow accent but without the box */
+.auth-card a.accent-link,
+.auth-footer a.accent-link,
+.quick-links a.accent-link {
+  color: var(--accent-yellow) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border: none !important;
+  text-decoration: underline !important;
+}
+
+/* Keep CTA buttons styled, but ensure nav active has no filled yellow block */
+.nav-link.active {
+  background: transparent !important;
+  color: var(--accent-yellow) !important;
+  border: 1px solid rgba(255,180,0,0.08) !important;
+  box-shadow: 0 6px 18px rgba(255,180,0,0.02) !important;
+  padding: 0.45rem 0.9rem !important;
+}
