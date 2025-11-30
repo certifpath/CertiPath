@@ -1,17 +1,84 @@
-server:
-  port: 8086
-
 spring:
+  application:
+    name: notification-service
+
+# ================== DEV PROFILE (local dev with Postgres + Kafka disabled) ==================
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
   datasource:
-    url: jdbc:postgresql://localhost:5432/notificationdb
+    url: jdbc:postgresql://localhost:5433/notificationdb
     username: postgres
     password: postgres
+
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
-kafka:
-  bootstrap-servers: localhost:9092
-  consumer:
-    group-id: notification-service
+  kafka:
+    bootstrap-servers: localhost:9092   # placeholder, not really used since we disable startup
+    consumer:
+      group-id: notification-service-group
+      auto-offset-reset: earliest
+    listener:
+      auto-startup: false    # <--- do NOT start @KafkaListener containers in dev for now
+
+server:
+  port: 8086
+
+# ================== TEST PROFILE (optional, H2 in-memory) ==================
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:notificationdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+# ================== PROD PROFILE (for Docker / real environment) ==================
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: notification-service-group
+      auto-offset-reset: earliest
+    listener:
+      auto-startup: true
+
+server:
+  port: 8086

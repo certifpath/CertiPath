@@ -4,6 +4,7 @@ import com.certipath.notification_service.entity.Notification;
 import com.certipath.notification_service.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,16 +22,27 @@ public class NotificationService {
         n.setMessage(message);
         n.setType(type);
         n.setStatus("UNREAD");
+        n.setCreatedAt(LocalDateTime.now());
         return repo.save(n);
     }
 
     public List<Notification> getUserNotifications(Long userId) {
-        return repo.findByUserIdOrderByCreatedAtDesc(userId);
+        return repo.findByUserId(userId);
     }
 
     public Notification markAsRead(Long id) {
         Notification n = repo.findById(id).orElseThrow();
         n.setStatus("READ");
         return repo.save(n);
+    }
+
+    // NEW: delete notification
+    public void deleteNotification(Long id) {
+        repo.deleteById(id);
+    }
+
+    // NEW: get all notifications
+    public List<Notification> getAllNotifications() {
+        return repo.findAll();
     }
 }
