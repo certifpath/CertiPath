@@ -1,8 +1,10 @@
+# ================== COMMON ==================
 spring:
   application:
     name: notification-service
 
-# ================== DEV PROFILE (local dev with Postgres + Kafka disabled) ==================
+# ================== DEV PROFILE ==================
+# Local dev: Postgres in Docker on port 5433, Kafka listener disabled
 ---
 spring:
   config:
@@ -13,6 +15,7 @@ spring:
     url: jdbc:postgresql://localhost:5433/notificationdb
     username: postgres
     password: postgres
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -23,17 +26,23 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   kafka:
-    bootstrap-servers: localhost:9092   # placeholder, not really used since we disable startup
+    # Just a placeholder; in dev we disable the listeners anyway
+    bootstrap-servers: localhost:9092
     consumer:
       group-id: notification-service-group
       auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
-      auto-startup: false    # <--- do NOT start @KafkaListener containers in dev for now
+      auto-startup: false          # <--- DO NOT start @KafkaListener in dev
+      missing-topics-fatal: false  # <--- Don't crash if topic doesn't exist yet
 
 server:
   port: 8086
 
-# ================== TEST PROFILE (optional, H2 in-memory) ==================
+
+# ================== TEST PROFILE (optional) ==================
+# In-memory DB for unit/integration tests
 ---
 spring:
   config:
@@ -53,7 +62,12 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
 
-# ================== PROD PROFILE (for Docker / real environment) ==================
+server:
+  port: 0   # random port for tests
+
+
+# ================== PROD PROFILE ==================
+# For Docker / real environment (values come from env vars)
 ---
 spring:
   config:
@@ -64,6 +78,7 @@ spring:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -77,8 +92,11 @@ spring:
     consumer:
       group-id: notification-service-group
       auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
-      auto-startup: true
+      auto-startup: true           # <--- In prod, start Kafka listeners
+      missing-topics-fatal: false  # <--- Don't crash if topic missing at startup
 
 server:
   port: 8086

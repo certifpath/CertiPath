@@ -3,7 +3,8 @@ package com.certipath.notification_service.service;
 import com.certipath.notification_service.entity.Notification;
 import com.certipath.notification_service.repository.NotificationRepository;
 import org.springframework.stereotype.Service;
-
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,9 +32,12 @@ public class NotificationService {
     }
 
     public Notification markAsRead(Long id) {
-        Notification n = repo.findById(id).orElseThrow();
-        n.setStatus("READ");
-        return repo.save(n);
+    Notification n = repo.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(
+            HttpStatus.NOT_FOUND, "Notification not found with id " + id
+        ));
+    n.setStatus("READ");
+    return repo.save(n);
     }
 
     // NEW: delete notification
