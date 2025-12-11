@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  file-storage-service:
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      # Spring datasource (mapped to spring.datasource.url)
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/filedb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      # MinIO properties (mapped to minio.url, etc.)
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=evidence
+    depends_on:
+      - postgres
+      - minio
+
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: filedb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  minio:
+    image: quay.io/minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+
+volumes:
+  pgdata:
+  miniodata:

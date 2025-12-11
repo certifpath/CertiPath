@@ -1,0 +1,11 @@
+target/
+.gradle/
+.mvn/
+settings.xml
+**/*.iml
+.vscode/
+.idea/
+*.log
+.git
+.gitignore
+README.md
