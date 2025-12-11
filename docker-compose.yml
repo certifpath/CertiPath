@@ -1,0 +1,29 @@
+services:
+  auditza-auth-service:
+    build: .
+    container_name: auditza_auth_service_app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/auditej_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      JWT_SECRET: 73fc3c485024a50737caa994f71d652c3edc763c0401f4cedd837693a020d1a3
+
+  postgres:
+    image: postgres:14-alpine
+    container_name: auditza_postgres_db
+    environment:
+      POSTGRES_DB: auditej_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

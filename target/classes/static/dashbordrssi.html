@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de Bord RSSI</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div class="container" style="padding-top: 50px;">
+        <h1>Tableau de Bord RSSI</h1>
+        <p>Bonjour, <span id="userName"></span>.</p>
+        <button id="logoutBtn" class="btn btn-primary">Se déconnecter</button>
+    </div>
+
+    <script>
+        // --- GARDE DE SÉCURITÉ (identique à la page admin) ---
+        (function() {
+            fetch('/api/users/me')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Non authentifié');
+                    }
+                    return response.json();
+                })
+                .then(user => {
+                    const userNameElement = document.getElementById('userName');
+                    if (userNameElement) {
+                        userNameElement.textContent = user.name;
+                    }
+                    console.log('Accès autorisé pour:', user.email);
+                })
+                .catch(error => {
+                    console.error('Accès non autorisé, redirection vers login.');
+                    window.location.href = '/login.html';
+                });
+        })();
+
+        // --- LOGIQUE DE DÉCONNEXION (identique à la page admin) ---
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            fetch('/api/auth/logout', { method: 'POST' })
+                .then(() => {
+                    window.location.href = '/login.html';
+                });
+        });
+    </script>
+</body>
+</html>

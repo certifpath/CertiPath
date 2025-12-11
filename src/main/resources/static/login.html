@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connexion - X Iso</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="auth-page dark-theme">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <a href="index.html" class="logo">
+            <i class="fas fa-shield-alt"></i> X Iso
+          </a>
+          <h1>Connexion sécurisée</h1>
+          <p>Accédez à votre espace personnel</p>
+        </div>
+
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <label for="loginEmail">
+              <i class="fas fa-envelope"></i> Adresse email
+            </label>
+            <input
+              type="email"
+              id="loginEmail"
+              name="email"
+              required
+              placeholder="votre@email.com"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="loginPassword">
+              <i class="fas fa-lock"></i> Mot de passe
+            </label>
+            <input
+              type="password"
+              id="loginPassword"
+              name="password"
+              required
+              placeholder="Votre mot de passe"
+            />
+            <div class="password-options">
+              <label class="checkbox-label">
+                <input type="checkbox" id="rememberMe" name="rememberMe" />
+                <span class="checkmark"></span>
+                Se souvenir de moi
+              </label>
+              <a href="#" class="forgot-password">Mot de passe oublié ?</a>
+            </div>
+          </div>
+
+          <div id="errorMessageContainer" class="error-message-box" style="display: none;">
+              <i class="fas fa-exclamation-circle"></i>
+              <span id="errorMessageText"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+            <span class="btn-text">Se connecter</span>
+            <div class="btn-loader" id="loginLoader">
+              <div class="spinner"></div>
+            </div>
+          </button>
+
+          <div class="mfa-section" id="mfaSection" style="display: none">
+            <div class="mfa-header">
+              <h3><i class="fas fa-shield-alt"></i> Vérification Zero Trust</h3>
+              <p>
+                Entrez le code reçu par email pour compléter l'authentification
+              </p>
+            </div>
+            <div class="form-group">
+              <label for="otpCode">Code de vérification</label>
+              <input
+                type="text"
+                id="otpCode"
+                name="otpCode"
+                maxlength="6"
+                placeholder="000000"
+                class="otp-input"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn btn-accent btn-full"
+              id="verifyOtpBtn"
+            >
+              Vérifier le code
+            </button>
+          </div>
+
+          <div class="auth-divider">
+            <span>Ou continuer avec</span>
+          </div>
+
+          <div class="social-auth">
+            <button type="button" class="btn btn-social btn-google">
+              <i class="fab fa-google"></i> Google
+            </button>
+            <button type="button" class="btn btn-social btn-microsoft">
+              <i class="fab fa-microsoft"></i> Microsoft
+            </button>
+          </div>
+        </form>
+
+        <div class="auth-footer">
+          <p>
+            Pas encore de compte ? <a href="signup.html">Créer un compte</a>
+          </p>
+        </div>
+      </div>
+
+      <div class="auth-background">
+        <div class="background-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
+        <!-- security badges removed -->
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+  </body>
+</html>
