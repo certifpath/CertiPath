@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XIso - Gestion des Preuves ISO 27001</title>
+    <style>
+      :root {
+        --primary-color: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary-color: #7c3aed;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --danger-color: #ef4444;
+        --info-color: #3b82f6;
+
+        --bg-dark: #0f172a;
+        --bg-card: #1e293b;
+        --bg-card-light: #334155;
+        --bg-hover: #2d3748;
+
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #94a3b8;
+
+        --border-color: #475569;
+        --border-radius: 8px;
+        --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+
+        --font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background-color: var(--bg-dark);
+        color: var(--text-primary);
+        line-height: 1.6;
+        min-height: 100vh;
+      }
+
+      /* Header Styles */
+      .header {
+        background-color: var(--bg-card);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .logo-icon {
+        background-color: var(--primary-color);
+        color: white;
+        width: 36px;
+        height: 36px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .nav-menu {
+        display: flex;
+        gap: 1.5rem;
+        list-style: none;
+      }
+
+      .nav-menu a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .nav-menu a.active {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .nav-menu a:hover:not(.active) {
+        background-color: var(--bg-hover);
+        color: var(--text-primary);
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .notification-bell {
+        position: relative;
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        font-size: 1.25rem;
+        padding: 0.5rem;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .notification-bell:hover {
+        background-color: var(--bg-hover);
+        color: var(--text-primary);
+      }
+
+      .notification-count {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background-color: var(--danger-color);
+        color: white;
+        font-size: 0.7rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--bg-card-light);
+        border-radius: var(--border-radius);
+      }
+
+      .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: var(--secondary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+      }
+
+      /* Main Layout */
+      .main-container {
+        display: flex;
+        min-height: calc(100vh - 72px);
+      }
+
+      .sidebar {
+        width: 280px;
+        background-color: var(--bg-card);
+        border-right: 1px solid var(--border-color);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .main-content {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+      }
+
+      /* Card Styles */
+      .card {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .card-subtitle {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+      }
+
+      /* Stats Cards */
+      .stats-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border-color);
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+
+      .stat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        width: fit-content;
+      }
+
+      .badge-draft {
+        background-color: rgba(245, 158, 11, 0.2);
+        color: var(--warning-color);
+      }
+
+      .badge-pending {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: var(--info-color);
+      }
+
+      .badge-validated {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: var(--success-color);
+      }
+
+      .badge-rejected {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: var(--danger-color);
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: var(--bg-card-light);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .form-control::placeholder {
+        color: var(--text-muted);
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: var(--bg-card-light);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        color: var(--text-primary);
+        font-family: var(--font-family);
+        font-size: 0.95rem;
+        cursor: pointer;
+      }
+
+      .form-select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
+
+      .form-file {
+        padding: 0.75rem;
+        background-color: var(--bg-card-light);
+        border: 2px dashed var(--border-color);
+        border-radius: var(--border-radius);
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .form-file:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(37, 99, 235, 0.05);
+      }
+
+      .form-file input[type="file"] {
+        display: none;
+      }
+
+      .file-info {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        display: none;
+      }
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        border: none;
+        font-weight: 600;
+        font-family: var(--font-family);
+        cursor: pointer;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+      }
+
+      .btn-secondary {
+        background-color: var(--bg-card-light);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        background-color: var(--bg-hover);
+      }
+
+      .btn-success {
+        background-color: var(--success-color);
+        color: white;
+      }
+
+      .btn-success:hover {
+        background-color: #0da271;
+      }
+
+      .btn-danger {
+        background-color: var(--danger-color);
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background-color: #dc2626;
+      }
+
+      .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+
+      .btn-icon {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Table Styles */
+      .table-container {
+        overflow-x: auto;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+      }
+
+      thead {
+        background-color: var(--bg-card-light);
+      }
+
+      th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      tbody tr:hover {
+        background-color: var(--bg-hover);
+      }
+
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .actions-cell {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      /* Annex A Reference Table */
+      .annex-table {
+        margin-top: 1rem;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      .annex-table th {
+        position: sticky;
+        top: 0;
+        background-color: var(--bg-card-light);
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        width: 90%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 2rem;
+        box-shadow: var(--shadow);
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .modal-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal-close:hover {
+        background-color: var(--bg-hover);
+      }
+
+      /* Comments Styles */
+      .comments-container {
+        margin-top: 1.5rem;
+      }
+
+      .comment {
+        padding: 1rem;
+        background-color: var(--bg-card-light);
+        border-radius: var(--border-radius);
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--primary-color);
+      }
+
+      .comment-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+      }
+
+      .comment-author {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .comment-date {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .comment-content {
+        color: var(--text-secondary);
+      }
+
+      /* Notifications Panel */
+      .notifications-panel {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 350px;
+        background-color: var(--bg-card);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        z-index: 100;
+      }
+
+      .notifications-panel.active {
+        display: block;
+      }
+
+      .notification-item {
+        padding: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .notification-item:hover {
+        background-color: var(--bg-hover);
+      }
+
+      .notification-item.unread {
+        background-color: rgba(37, 99, 235, 0.1);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .main-container {
+          flex-direction: column;
+        }
+
+        .sidebar {
+          width: 100%;
+          border-right: none;
+          border-bottom: 1px solid var(--border-color);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+        }
+
+        .nav-menu {
+          flex-wrap: wrap;
+          justify-content: center;
+        }
+
+        .stats-container {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <div class="logo-icon">X</div>
+        <span>XIso</span>
+      </div>
+
+      <ul class="nav-menu">
+        <li><a href="#" class="active">RSSI</a></li>
+        <li><a href="#">Auditeur</a></li>
+        <li><a href="#">ISO 27001</a></li>
+        <li><a href="#">Rapports</a></li>
+      </ul>
+
+      <div class="header-right">
+        <div class="notification-container">
+          <button class="notification-bell" id="notificationBell">
+            <i>🔔</i>
+            <span class="notification-count" id="notificationCount">3</span>
+          </button>
+          <div class="notifications-panel" id="notificationsPanel">
+            <div class="notification-item unread">
+              <div><strong>Nouvelle preuve créée</strong></div>
+              <div class="text-muted">A.5.1 - Politiques de sécurité</div>
+              <small>Il y a 5 minutes</small>
+            </div>
+            <div class="notification-item unread">
+              <div><strong>Commentaire ajouté</strong></div>
+              <div class="text-muted">Sur la preuve #4</div>
+              <small>Il y a 2 heures</small>
+            </div>
+            <div class="notification-item">
+              <div><strong>Preuve envoyée à l'auditeur</strong></div>
+              <div class="text-muted">A.8.1 - Dispositifs des utilisateurs</div>
+              <small>Hier, 14:30</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="user-profile">
+          <div class="user-avatar">RS</div>
+          <div>
+            <div>RSSI Admin</div>
+            <small class="text-muted">Responsable Sécurité SI</small>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="card">
+          <h3 class="card-title">Statut des Preuves</h3>
+          <div class="stats-summary">
+            <div class="stat-card">
+              <div class="stat-value" id="totalEvidences">0</div>
+              <div class="stat-label">Total des Preuves</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="draftEvidences">0</div>
+              <div class="stat-label">Brouillons</div>
+              <div class="stat-badge badge-draft">BROUILLON</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="pendingEvidences">0</div>
+              <div class="stat-label">En Attente</div>
+              <div class="stat-badge badge-pending">EN_ATTENTE</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Couverture des Contrôles</h3>
+          <div class="coverage-info">
+            <div class="coverage-value">45%</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 45%"></div>
+            </div>
+            <small class="text-muted">18/40 contrôles Annex A couverts</small>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Actions Rapides</h3>
+          <div class="quick-actions">
+            <button
+              class="btn btn-secondary btn-sm"
+              onclick="document.getElementById('newEvidenceForm').scrollIntoView({behavior: 'smooth'})"
+            >
+              <i>➕</i> Nouvelle Preuve
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="loadEvidences()">
+              <i>🔄</i> Actualiser la Liste
+            </button>
+            <button
+              class="btn btn-secondary btn-sm"
+              onclick="exportEvidences()"
+            >
+              <i>📊</i> Exporter Rapport
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1>Gestion des Preuves ISO 27001</h1>
+          <p class="card-subtitle">
+            Système de gestion des preuves de conformité pour les contrôles
+            Annex A
+          </p>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-container">
+          <div class="stat-card">
+            <div class="stat-value" id="totalFiles">0</div>
+            <div class="stat-label">Fichiers Déposés</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="last30Days">0</div>
+            <div class="stat-label">Derniers 30 Jours</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="coverageScore">45%</div>
+            <div class="stat-label">Score de Couverture</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="avgResponseTime">2.5j</div>
+            <div class="stat-label">Temps Moyen de Traitement</div>
+          </div>
+        </div>
+
+        <!-- Annex A Reference -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Référence Annex A ISO 27001</h2>
+              <p class="card-subtitle">
+                Contrôles principaux pour la gestion des preuves
+              </p>
+            </div>
+          </div>
+
+          <div class="annex-table table-container">
+            <table id="annexTable">
+              <thead>
+                <tr>
+                  <th>ID Contrôle</th>
+                  <th>Nom du Contrôle</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>A.5.1</strong></td>
+                  <td>Politiques de sécurité</td>
+                  <td>
+                    Établir et maintenir des politiques de sécurité de
+                    l'information
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>A.5.2</strong></td>
+                  <td>Rôles et responsabilités</td>
+                  <td>
+                    Attribuer et communiquer les responsabilités de sécurité
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>A.6.1</strong></td>
+                  <td>Analyse des risques</td>
+                  <td>Identifier et évaluer les risques de sécurité</td>
+                </tr>
+                <tr>
+                  <td><strong>A.6.2</strong></td>
+                  <td>Traitement des risques</td>
+                  <td>
+                    Sélectionner et mettre en œuvre des mesures de traitement
+                    des risques
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>A.7.1</strong></td>
+                  <td>Screening du personnel</td>
+                  <td>
+                    Vérifier les antécédents des employés et des sous-traitants
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>A.7.2</strong></td>
+                  <td>Formation à la sécurité</td>
+                  <td>
+                    Fournir une formation et une sensibilisation à la sécurité
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>A.8.1</strong></td>
+                  <td>Dispositifs des utilisateurs</td>
+                  <td>Gérer la sécurité des terminaux utilisateurs</td>
+                </tr>
+                <tr>
+                  <td><strong>A.8.2</strong></td>
+                  <td>Gestion des privilèges</td>
+                  <td>Restreindre et contrôler les accès privilégiés</td>
+                </tr>
+                <tr>
+                  <td><strong>A.8.23</strong></td>
+                  <td>Filtrage Web</td>
+                  <td>Protéger contre les menaces basées sur le web</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- New Evidence Form -->
+        <div class="card" id="newEvidenceForm">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Déposer une Nouvelle Preuve</h2>
+              <p class="card-subtitle">
+                Téléchargez un document, une capture ou un rapport lié à un
+                contrôle ISO 27001
+              </p>
+            </div>
+          </div>
+
+          <form id="uploadForm" enctype="multipart/form-data">
+            <div class="form-group">
+              <label class="form-label" for="title">Titre de la Preuve *</label>
+              <input
+                type="text"
+                class="form-control"
+                id="title"
+                name="title"
+                placeholder="Ex: Politique de sécurité informatique v2.0"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="controlId"
+                >Contrôle ISO 27001 *</label
+              >
+              <select
+                class="form-select"
+                id="controlId"
+                name="controlId"
+                required
+              >
+                <option value="">Sélectionner un contrôle...</option>
+                <option value="A.5.1">A.5.1 - Politiques de sécurité</option>
+                <option value="A.5.2">A.5.2 - Rôles et responsabilités</option>
+                <option value="A.6.1">A.6.1 - Analyse des risques</option>
+                <option value="A.6.2">A.6.2 - Traitement des risques</option>
+                <option value="A.7.1">A.7.1 - Screening du personnel</option>
+                <option value="A.7.2">A.7.2 - Formation à la sécurité</option>
+                <option value="A.8.1">
+                  A.8.1 - Dispositifs des utilisateurs
+                </option>
+                <option value="A.8.2">A.8.2 - Gestion des privilèges</option>
+                <option value="A.8.23">A.8.23 - Filtrage Web</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="description">Description</label>
+              <textarea
+                class="form-control"
+                id="description"
+                name="description"
+                rows="3"
+                placeholder="Décrivez la preuve, son contexte et son lien avec le contrôle..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Fichier de Preuve *</label>
+              <div class="form-file" id="fileDropArea">
+                <div>
+                  <strong>Cliquez pour sélectionner un fichier</strong>
+                  <div>ou glissez-déposez ici</div>
+                  <small
+                    >Formats acceptés: PDF, DOCX, PNG, JPG, XLSX (Max:
+                    10MB)</small
+                  >
+                </div>
+                <input
+                  type="file"
+                  id="file"
+                  name="file"
+                  required
+                  accept=".pdf,.docx,.png,.jpg,.jpeg,.xlsx"
+                />
+              </div>
+              <div class="file-info" id="fileInfo"></div>
+            </div>
+
+            <div
+              class="form-group"
+              style="display: flex; gap: 1rem; margin-top: 2rem"
+            >
+              <button type="submit" class="btn btn-primary">
+                <i>📤</i> Déposer la Preuve
+              </button>
+              <button type="reset" class="btn btn-secondary">
+                <i>🗑️</i> Effacer le Formulaire
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Evidence List -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">Mes Preuves Déposées</h2>
+              <p class="card-subtitle">
+                Tableau de suivi des preuves de conformité ISO 27001
+              </p>
+            </div>
+            <button class="btn btn-secondary" onclick="loadEvidences()">
+              <i>🔄</i> Actualiser
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table id="evidenceTable">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Titre</th>
+                  <th>Contrôle</th>
+                  <th>Fichier</th>
+                  <th>Statut</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="evidenceTableBody">
+                <!-- Les preuves seront chargées ici dynamiquement -->
+                <tr>
+                  <td colspan="7" style="text-align: center; padding: 3rem">
+                    <div>Chargement des preuves...</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Comments Modal -->
+    <div class="modal" id="commentsModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">
+            Commentaires - Preuve <span id="modalEvidenceId"></span>
+          </h3>
+          <button class="modal-close" onclick="closeModal('commentsModal')">
+            ×
+          </button>
+        </div>
+
+        <div class="comments-container" id="commentsContainer">
+          <div class="comment">
+            <div class="comment-header">
+              <div class="comment-author">RSSI Admin</div>
+              <div class="comment-date">10/02/2024 14:30</div>
+            </div>
+            <div class="comment-content">
+              Cette preuve a été préparée suite à l'audit interne du Q1. Elle
+              inclut les mises à jour des politiques suite aux changements
+              organisationnels.
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 2rem">
+          <label class="form-label" for="newComment"
+            >Ajouter un commentaire interne</label
+          >
+          <textarea
+            class="form-control"
+            id="newComment"
+            rows="3"
+            placeholder="Votre commentaire..."
+          ></textarea>
+          <button class="btn btn-primary" style="margin-top: 1rem">
+            <i>💬</i> Ajouter Commentaire
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Modal -->
+    <div class="modal" id="notificationModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Notifications</h3>
+          <button class="modal-close" onclick="closeModal('notificationModal')">
+            ×
+          </button>
+        </div>
+        <div id="notificationList">
+          <!-- Notifications seront chargées ici -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Variables globales
+      let evidences = [];
+      let notifications = [
+        {
+          id: 1,
+          type: "new_evidence",
+          title: "Nouvelle preuve créée",
+          description: "A.5.1 - Politiques de sécurité",
+          time: "Il y a 5 minutes",
+          read: false,
+        },
+        {
+          id: 2,
+          type: "comment",
+          title: "Commentaire ajouté",
+          description: "Sur la preuve #4",
+          time: "Il y a 2 heures",
+          read: false,
+        },
+        {
+          id: 3,
+          type: "sent_to_auditor",
+          title: "Preuve envoyée à l'auditeur",
+          description: "A.8.1 - Dispositifs des utilisateurs",
+          time: "Hier, 14:30",
+          read: true,
+        },
+      ];
+
+      // État de l'application
+      const state = {
+        currentEvidenceId: null,
+        isLoading: false,
+      };
+
+      // Initialisation
+      document.addEventListener("DOMContentLoaded", function () {
+        loadEvidences();
+        setupEventListeners();
+        updateNotificationCount();
+
+        // Simuler des données initiales
+        setTimeout(() => {
+          updateStats();
+        }, 1000);
+      });
+
+      // Configuration des écouteurs d'événements
+      function setupEventListeners() {
+        // Gestion du téléversement de fichier
+        const fileInput = document.getElementById("file");
+        const fileDropArea = document.getElementById("fileDropArea");
+        const fileInfo = document.getElementById("fileInfo");
+
+        fileDropArea.addEventListener("click", () => fileInput.click());
+
+        fileInput.addEventListener("change", function () {
+          if (this.files.length > 0) {
+            const file = this.files[0];
+            fileInfo.innerHTML = `
+                        <strong>${file.name}</strong> (${formatFileSize(
+              file.size
+            )})
+                        <br><small>Type: ${file.type || "Non spécifié"}</small>
+                    `;
+            fileInfo.style.display = "block";
+          }
+        });
+
+        // Gestion du drag and drop
+        fileDropArea.addEventListener("dragover", (e) => {
+          e.preventDefault();
+          fileDropArea.style.borderColor = "var(--primary-color)";
+          fileDropArea.style.backgroundColor = "rgba(37, 99, 235, 0.1)";
+        });
+
+        fileDropArea.addEventListener("dragleave", () => {
+          fileDropArea.style.borderColor = "var(--border-color)";
+          fileDropArea.style.backgroundColor = "var(--bg-card-light)";
+        });
+
+        fileDropArea.addEventListener("drop", (e) => {
+          e.preventDefault();
+          fileDropArea.style.borderColor = "var(--border-color)";
+          fileDropArea.style.backgroundColor = "var(--bg-card-light)";
+
+          if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            const file = e.dataTransfer.files[0];
+            fileInfo.innerHTML = `
+                        <strong>${file.name}</strong> (${formatFileSize(
+              file.size
+            )})
+                        <br><small>Type: ${file.type || "Non spécifié"}</small>
+                    `;
+            fileInfo.style.display = "block";
+          }
+        });
+
+        // Soumission du formulaire
+        document
+          .getElementById("uploadForm")
+          .addEventListener("submit", handleSubmitEvidence);
+
+        // Notifications
+        document
+          .getElementById("notificationBell")
+          .addEventListener("click", toggleNotificationsPanel);
+
+        // Fermer le panneau de notifications en cliquant ailleurs
+        document.addEventListener("click", (e) => {
+          const panel = document.getElementById("notificationsPanel");
+          const bell = document.getElementById("notificationBell");
+
+          if (!panel.contains(e.target) && !bell.contains(e.target)) {
+            panel.classList.remove("active");
+          }
+        });
+      }
+
+      // Charger les preuves depuis l'API
+      async function loadEvidences() {
+        state.isLoading = true;
+        const tableBody = document.getElementById("evidenceTableBody");
+        tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; padding: 3rem;">
+                        <div>Chargement des preuves...</div>
+                    </td>
+                </tr>
+            `;
+
+        try {
+          const response = await fetch("/evidence/list");
+          if (response.ok) {
+            evidences = await response.json();
+            renderEvidencesTable();
+            updateStats();
+          } else {
+            showError("Erreur lors du chargement des preuves");
+            // Afficher des données de démonstration si l'API n'est pas disponible
+            setTimeout(() => {
+              loadDemoEvidences();
+            }, 500);
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showError("Impossible de se connecter au serveur");
+          // Afficher des données de démonstration
+          setTimeout(() => {
+            loadDemoEvidences();
+          }, 500);
+        }
+
+        state.isLoading = false;
+      }
+
+      // Charger des preuves de démonstration
+      function loadDemoEvidences() {
+        evidences = [
+          {
+            id: 1,
+            title: "Politique de sécurité informatique",
+            description: "Document officiel des politiques de sécurité",
+            controlId: "A.5.1",
+            fileId: "file1.pdf",
+            status: "EN_ATTENTE",
+            createdAt: "2024-02-10T14:30:00",
+          },
+          {
+            id: 2,
+            title: "Matrice des responsabilités",
+            description: "Tableau des rôles et responsabilités sécurité",
+            controlId: "A.5.2",
+            fileId: "file2.xlsx",
+            status: "BROUILLON",
+            createdAt: "2024-02-09T10:15:00",
+          },
+          {
+            id: 3,
+            title: "Rapport d'analyse des risques",
+            description: "Évaluation des risques Q4 2023",
+            controlId: "A.6.1",
+            fileId: "file3.pdf",
+            status: "EN_ATTENTE",
+            createdAt: "2024-02-08T16:45:00",
+          },
+          {
+            id: 4,
+            title: "Procédure de filtrage web",
+            description: "Configuration et règles de filtrage",
+            controlId: "A.8.23",
+            fileId: "file4.docx",
+            status: "BROUILLON",
+            createdAt: "2024-02-07T09:20:00",
+          },
+        ];
+
+        renderEvidencesTable();
+        updateStats();
+      }
+
+      // Afficher les preuves dans le tableau
+      function renderEvidencesTable() {
+        const tableBody = document.getElementById("evidenceTableBody");
+
+        if (evidences.length === 0) {
+          tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 3rem;">
+                            <div>Aucune preuve n'a été déposée.</div>
+                            <button class="btn btn-primary" style="margin-top: 1rem;" onclick="document.getElementById('newEvidenceForm').scrollIntoView({behavior: 'smooth'})">
+                                Déposer votre première preuve
+                            </button>
+                        </td>
+                    </tr>
+                `;
+          return;
+        }
+
+        let html = "";
+
+        evidences.forEach((evidence) => {
+          const date = new Date(evidence.createdAt);
+          const formattedDate = date.toLocaleDateString("fr-FR");
+          const formattedTime = date.toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+
+          let statusBadge;
+          if (evidence.status === "BROUILLON") {
+            statusBadge =
+              '<span class="status-badge badge-draft">BROUILLON</span>';
+          } else if (evidence.status === "EN_ATTENTE") {
+            statusBadge =
+              '<span class="status-badge badge-pending">EN_ATTENTE</span>';
+          } else if (evidence.status === "VALIDEE") {
+            statusBadge =
+              '<span class="status-badge badge-validated">VALIDÉE</span>';
+          } else if (evidence.status === "REFUSEE") {
+            statusBadge =
+              '<span class="status-badge badge-rejected">REFUSÉE</span>';
+          }
+
+          const fileExtension = evidence.fileId
+            ? evidence.fileId.split(".").pop().toUpperCase()
+            : "PDF";
+
+          html += `
+                    <tr>
+                        <td>${evidence.id}</td>
+                        <td>
+                            <strong>${evidence.title}</strong>
+                            <div class="text-muted" style="font-size: 0.85rem; margin-top: 0.25rem;">${evidence.description.substring(
+                              0,
+                              50
+                            )}${
+            evidence.description.length > 50 ? "..." : ""
+          }</div>
+                        </td>
+                        <td><strong>${evidence.controlId}</strong></td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" onclick="downloadEvidence(${
+                              evidence.id
+                            })">
+                                <i>📄</i> ${fileExtension}
+                            </button>
+                        </td>
+                        <td>${statusBadge}</td>
+                        <td>${formattedDate}<br><small>${formattedTime}</small></td>
+                        <td class="actions-cell">
+                            <button class="btn btn-icon btn-secondary" title="Télécharger" onclick="downloadEvidence(${
+                              evidence.id
+                            })">
+                                <i>⬇️</i>
+                            </button>
+                            <button class="btn btn-icon btn-secondary" title="Commentaires" onclick="openComments(${
+                              evidence.id
+                            })">
+                                <i>💬</i>
+                            </button>
+                            ${
+                              evidence.status === "BROUILLON"
+                                ? `
+                                <button class="btn btn-icon btn-success" title="Envoyer à l'auditeur" onclick="sendToAuditor(${evidence.id})">
+                                    <i>📤</i>
+                                </button>
+                            `
+                                : ""
+                            }
+                            <button class="btn btn-icon btn-danger" title="Supprimer" onclick="deleteEvidence(${
+                              evidence.id
+                            })">
+                                <i>🗑️</i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+        });
+
+        tableBody.innerHTML = html;
+      }
+
+      // Soumettre une nouvelle preuve
+      async function handleSubmitEvidence(e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+
+        // Validation
+        const title = formData.get("title");
+        const controlId = formData.get("controlId");
+        const file = formData.get("file");
+
+        if (!title || !controlId || !file) {
+          showError("Veuillez remplir tous les champs obligatoires");
+          return;
+        }
+
+        if (file.size > 10 * 1024 * 1024) {
+          // 10MB limit
+          showError("Le fichier est trop volumineux (max: 10MB)");
+          return;
+        }
+
+        try {
+          const response = await fetch("/evidence/create", {
+            method: "POST",
+            body: formData,
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            showSuccess("Preuve déposée avec succès !");
+            form.reset();
+            document.getElementById("fileInfo").style.display = "none";
+
+            // Ajouter une notification
+            addNotification(
+              "new_evidence",
+              "Nouvelle preuve créée",
+              `${controlId} - ${title}`,
+              "À l'instant"
+            );
+
+            // Recharger la liste
+            loadEvidences();
+          } else {
+            const errorText = await response.text();
+            showError(`Erreur: ${errorText}`);
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showError("Erreur lors du dépôt de la preuve");
+
+          // Simulation de succès pour la démonstration
+          setTimeout(() => {
+            showSuccess("Preuve déposée avec succès ! (Démo)");
+            form.reset();
+            document.getElementById("fileInfo").style.display = "none";
+            addNotification(
+              "new_evidence",
+              "Nouvelle preuve créée",
+              `${controlId} - ${title}`,
+              "À l'instant"
+            );
+            loadEvidences();
+          }, 500);
+        }
+      }
+
+      // Télécharger une preuve
+      async function downloadEvidence(id) {
+        try {
+          const response = await fetch(`/evidence/${id}/download`);
+
+          if (response.ok) {
+            // Get the filename from Content-Disposition header
+            const contentDisposition = response.headers.get(
+              "Content-Disposition"
+            );
+            let filename = `evidence_${id}`;
+
+            if (contentDisposition) {
+              const filenameMatch = contentDisposition.match(
+                /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/
+              );
+              if (filenameMatch && filenameMatch[1]) {
+                filename = filenameMatch[1].replace(/['"]/g, "");
+              }
+            } else {
+              // If no Content-Disposition, try to get extension from Content-Type or evidence data
+              const evidence = evidences.find((e) => e.id === id);
+              if (evidence && evidence.fileId) {
+                const ext = evidence.fileId.split(".").pop();
+                filename = `${evidence.title.replace(
+                  /[^a-z0-9]/gi,
+                  "_"
+                )}.${ext}`;
+              } else {
+                // Fallback: try to determine from Content-Type
+                const contentType = response.headers.get("Content-Type");
+                const ext = getExtensionFromContentType(contentType) || "bin";
+                filename = `evidence_${id}.${ext}`;
+              }
+            }
+
+            // Convert response to blob
+            const blob = await response.blob();
+
+            // Create a temporary URL for the blob
+            const url = window.URL.createObjectURL(blob);
+
+            // Create a temporary anchor element and trigger download
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = filename;
+
+            // Append to body, click, and remove
+            document.body.appendChild(a);
+            a.click();
+
+            // Clean up
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            showSuccess("Fichier téléchargé avec succès");
+
+            // Enregistrer l'action dans les logs
+            addNotification(
+              "download",
+              "Preuve téléchargée",
+              `Preuve #${id}`,
+              "À l'instant"
+            );
+          } else {
+            showError("Erreur lors du téléchargement");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showError("Erreur de connexion au serveur");
+        }
+      }
+
+      // Envoyer à l'auditeur
+      async function sendToAuditor(id) {
+        if (!confirm("Envoyer cette preuve à l'auditeur pour validation ?")) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/evidence/${id}/send`, {
+            method: "PUT",
+          });
+
+          if (response.ok) {
+            showSuccess("Preuve envoyée à l'auditeur");
+
+            // Mettre à jour le statut localement
+            const evidenceIndex = evidences.findIndex((e) => e.id === id);
+            if (evidenceIndex !== -1) {
+              evidences[evidenceIndex].status = "EN_ATTENTE";
+              renderEvidencesTable();
+              updateStats();
+            }
+
+            // Ajouter une notification
+            addNotification(
+              "sent_to_auditor",
+              "Preuve envoyée à l'auditeur",
+              `Preuve #${id}`,
+              "À l'instant"
+            );
+          } else {
+            showError("Erreur lors de l'envoi à l'auditeur");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showError("Erreur de connexion au serveur");
+
+          // Simulation pour la démonstration
+          setTimeout(() => {
+            showSuccess("Preuve envoyée à l'auditeur (Démo)");
+            const evidenceIndex = evidences.findIndex((e) => e.id === id);
+            if (evidenceIndex !== -1) {
+              evidences[evidenceIndex].status = "EN_ATTENTE";
+              renderEvidencesTable();
+              updateStats();
+            }
+            addNotification(
+              "sent_to_auditor",
+              "Preuve envoyée à l'auditeur",
+              `Preuve #${id}`,
+              "À l'instant"
+            );
+          }, 500);
+        }
+      }
+
+      // Supprimer une preuve
+      async function deleteEvidence(id) {
+        if (
+          !confirm(
+            "Êtes-vous sûr de vouloir supprimer cette preuve ? Cette action est irréversible."
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/evidence/${id}`, {
+            method: "DELETE",
+          });
+
+          if (response.ok) {
+            showSuccess("Preuve supprimée avec succès");
+
+            // Mettre à jour la liste localement
+            evidences = evidences.filter((e) => e.id !== id);
+            renderEvidencesTable();
+            updateStats();
+
+            // Ajouter une notification
+            addNotification(
+              "delete",
+              "Preuve supprimée",
+              `Preuve #${id}`,
+              "À l'instant"
+            );
+          } else {
+            showError("Erreur lors de la suppression");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showError("Erreur de connexion au serveur");
+
+          // Simulation pour la démonstration
+          setTimeout(() => {
+            showSuccess("Preuve supprimée avec succès (Démo)");
+            evidences = evidences.filter((e) => e.id !== id);
+            renderEvidencesTable();
+            updateStats();
+            addNotification(
+              "delete",
+              "Preuve supprimée",
+              `Preuve #${id}`,
+              "À l'instant"
+            );
+          }, 500);
+        }
+      }
+
+      // Ouvrir les commentaires
+      function openComments(id) {
+        state.currentEvidenceId = id;
+        document.getElementById("modalEvidenceId").textContent = id;
+
+        // Ici, nous devrions charger les commentaires depuis l'API
+        // Pour l'instant, nous utilisons des données de démonstration
+
+        const evidence = evidences.find((e) => e.id === id);
+        const commentsContainer = document.getElementById("commentsContainer");
+
+        let commentsHtml = `
+                <div class="comment">
+                    <div class="comment-header">
+                        <div class="comment-author">RSSI Admin</div>
+                        <div class="comment-date">${new Date().toLocaleDateString(
+                          "fr-FR"
+                        )} ${new Date().toLocaleTimeString("fr-FR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}</div>
+                    </div>
+                    <div class="comment-content">
+                        Preuve pour le contrôle <strong>${
+                          evidence.controlId
+                        }</strong>: ${evidence.title}
+                    </div>
+                </div>
+            `;
+
+        if (evidence.description) {
+          commentsHtml += `
+                    <div class="comment">
+                        <div class="comment-header">
+                            <div class="comment-author">RSSI Admin</div>
+                            <div class="comment-date">${new Date(
+                              evidence.createdAt
+                            ).toLocaleDateString("fr-FR")} ${new Date(
+            evidence.createdAt
+          ).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })}</div>
+                        </div>
+                        <div class="comment-content">
+                            ${evidence.description}
+                        </div>
+                    </div>
+                `;
+        }
+
+        commentsContainer.innerHTML = commentsHtml;
+
+        openModal("commentsModal");
+      }
+
+      // Mettre à jour les statistiques
+      function updateStats() {
+        const total = evidences.length;
+        const draft = evidences.filter((e) => e.status === "BROUILLON").length;
+        const pending = evidences.filter(
+          (e) => e.status === "EN_ATTENTE"
+        ).length;
+
+        document.getElementById("totalEvidences").textContent = total;
+        document.getElementById("draftEvidences").textContent = draft;
+        document.getElementById("pendingEvidences").textContent = pending;
+        document.getElementById("totalFiles").textContent = total;
+        document.getElementById("last30Days").textContent = Math.floor(
+          total * 0.7
+        ); // Simulation
+
+        // Calculer le score de couverture
+        const uniqueControls = [...new Set(evidences.map((e) => e.controlId))];
+        const coverage = Math.min(
+          Math.round((uniqueControls.length / 9) * 100),
+          100
+        ); // 9 contrôles dans notre liste
+        document.getElementById("coverageScore").textContent = `${coverage}%`;
+      }
+
+      // Gestion des notifications
+      function toggleNotificationsPanel() {
+        const panel = document.getElementById("notificationsPanel");
+        panel.classList.toggle("active");
+
+        // Marquer toutes les notifications comme lues
+        notifications.forEach((n) => (n.read = true));
+        updateNotificationCount();
+      }
+
+      function updateNotificationCount() {
+        const unreadCount = notifications.filter((n) => !n.read).length;
+        document.getElementById("notificationCount").textContent = unreadCount;
+        document.getElementById("notificationCount").style.display =
+          unreadCount > 0 ? "flex" : "none";
+      }
+
+      function addNotification(type, title, description, time) {
+        const id = notifications.length + 1;
+        notifications.unshift({
+          id,
+          type,
+          title,
+          description,
+          time,
+          read: false,
+        });
+
+        updateNotificationCount();
+      }
+
+      // Gestion des modales
+      function openModal(modalId) {
+        document.getElementById(modalId).classList.add("active");
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove("active");
+      }
+
+      // Fonctions utilitaires
+      function formatFileSize(bytes) {
+        if (bytes === 0) return "0 Bytes";
+        const k = 1024;
+        const sizes = ["Bytes", "KB", "MB", "GB"];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+      }
+
+      function getExtensionFromContentType(contentType) {
+        const mimeTypes = {
+          "application/pdf": "pdf",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            "docx",
+          "application/msword": "doc",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+            "xlsx",
+          "application/vnd.ms-excel": "xls",
+          "image/png": "png",
+          "image/jpeg": "jpg",
+          "image/jpg": "jpg",
+        };
+        return mimeTypes[contentType] || null;
+      }
+
+      function showSuccess(message) {
+        alertifySuccess(message);
+      }
+
+      function showError(message) {
+        alertifyError(message);
+      }
+
+      // Fonctions d'alerte simplifiées (remplace alert)
+      function alertifySuccess(message) {
+        const alert = document.createElement("div");
+        alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: var(--success-color);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                animation: slideIn 0.3s ease;
+            `;
+        alert.innerHTML = `
+                <div>✅</div>
+                <div>${message}</div>
+            `;
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+          alert.style.animation = "slideOut 0.3s ease";
+          setTimeout(() => alert.remove(), 300);
+        }, 3000);
+      }
+
+      function alertifyError(message) {
+        const alert = document.createElement("div");
+        alert.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background-color: var(--danger-color);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: var(--border-radius);
+                box-shadow: var(--shadow);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                animation: slideIn 0.3s ease;
+            `;
+        alert.innerHTML = `
+                <div>❌</div>
+                <div>${message}</div>
+            `;
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+          alert.style.animation = "slideOut 0.3s ease";
+          setTimeout(() => alert.remove(), 300);
+        }, 3000);
+      }
+
+      // Export des preuves (simulation)
+      function exportEvidences() {
+        showSuccess("Rapport généré avec succès (simulation)");
+        addNotification(
+          "export",
+          "Rapport exporté",
+          "Toutes les preuves",
+          "À l'instant"
+        );
+      }
+
+      // Ajouter des styles d'animation
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            
+            .progress-bar {
+                width: 100%;
+                height: 8px;
+                background-color: var(--bg-card-light);
+                border-radius: 4px;
+                margin: 0.75rem 0;
+                overflow: hidden;
+            }
+            
+            .progress-fill {
+                height: 100%;
+                background-color: var(--primary-color);
+                border-radius: 4px;
+                transition: width 0.5s ease;
+            }
+            
+            .coverage-value {
+                font-size: 2rem;
+                font-weight: 700;
+                color: var(--primary-color);
+            }
+            
+            .quick-actions {
+                display: flex;
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .stats-summary {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
