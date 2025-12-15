@@ -2,8 +2,11 @@ C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Config\ApplicationConfig.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Config\JwtAuthFilter.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Config\SecurityConfig.java
+C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Controller\AdminController.java
+C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Controller\AuditeurController.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Controller\AuthController.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Controller\ImageController.java
+C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Controller\RssiController.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\Controller\UserController.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\dto\AuthResponse.java
 C:\Users\Pc\Desktop\devops\audit_project\CertiPath\Auditza-Backend\src\main\java\com\appAuditza\Auditza\Backend\dto\ErrorResponse.java

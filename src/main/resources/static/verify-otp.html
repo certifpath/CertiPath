@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vérification Requise</title>
+    <script src="js/guard.js"></script>
     <link rel="stylesheet" href="css/style.css" />
     <style>
         .auth-container {
@@ -35,16 +36,6 @@
         </div>
     </div>
     
-    <!-- Garde de sécurité SPÉCIFIQUE pour cette page -->
-    <script>
-        (function() {
-            const userEmail = sessionStorage.getItem('userEmailForOtp');
-            if (!userEmail) {
-                console.warn('Accès direct à verify-otp.html. Redirection...');
-                window.location.href = '/login.html';
-            }
-        })();
-    </script>
 
     <!-- Script principal pour la logique de la page -->
     <script src="js/auth.js"></script>

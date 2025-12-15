@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Tableau de Bord Admin</title>
+    <!-- Le seul garde nécessaire -->
+    <script src="js/guard.js"></script>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -12,40 +14,7 @@
         <button id="logoutBtn" class="btn btn-primary">Se déconnecter</button>
     </div>
 
-    <script>
-        // --- GARDE DE SÉCURITÉ ---
-        // Ce script s'exécute immédiatement pour protéger la page.
-        (function() {
-            fetch('/api/users/me')
-                .then(response => {
-                    if (!response.ok) {
-                        // L'utilisateur n'est pas authentifié.
-                        throw new Error('Non authentifié');
-                    }
-                    return response.json();
-                })
-                .then(user => {
-                    // L'utilisateur est authentifié. On peut personnaliser la page.
-                    const userNameElement = document.getElementById('userName');
-                    if (userNameElement) {
-                        userNameElement.textContent = user.name;
-                    }
-                    console.log('Accès autorisé pour:', user.email);
-                })
-                .catch(error => {
-                    // La requête a échoué. Redirection vers la page de connexion.
-                    console.error('Accès non autorisé, redirection vers login.');
-                    window.location.href = '/login.html';
-                });
-        })();
-
-        // --- LOGIQUE DE DÉCONNEXION ---
-        document.getElementById('logoutBtn').addEventListener('click', function() {
-            fetch('/api/auth/logout', { method: 'POST' })
-                .then(() => {
-                    window.location.href = '/login.html';
-                });
-        });
-    </script>
+    <!-- Script externe pour la déconnexion -->
+    <script src="js/logout.js"></script>
 </body>
 </html>

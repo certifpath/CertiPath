@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,6 +14,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -24,13 +26,34 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(authorize -> authorize
+                // On autorise l'accès anonyme à toutes les pages et ressources publiques.
+                // La protection de ces pages sera gérée par le script guard.js côté client.
                 .requestMatchers(
-                    "/api/auth/**", "/api/images/**",
-                    "/", "/index.html", "/login.html", "/signup.html", 
-                    "/qrcode.html", "/verify-otp.html", "/home.html",
-                    "/css/**", "/js/**", "/favicon.ico"
+                    // Endpoints d'API publics
+                    "/api/auth/**", 
+                    "/api/images/**",
+                    
+                    // Pages et ressources statiques
+                    "/", 
+                    "/index.html", 
+                    "/login.html", 
+                    "/signup.html", 
+                    "/qrcode.html", 
+                    "/verify-otp.html",
+                    
+                    // --- AJOUTS CRUCIAUX ICI ---
+                    "/home.html",
+                    "/dashbordrssi.html",
+                    "/admin.html",
+                    // --- FIN DES AJOUTS ---
+                    
+                    "/css/**", 
+                    "/js/**", 
+                    "/favicon.ico"
                 ).permitAll()
-                .requestMatchers("/api/users/me").authenticated()
+                
+                // Toutes les autres requêtes (en particulier les autres endpoints d'API)
+                // nécessitent une authentification.
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

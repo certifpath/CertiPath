@@ -1,25 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-     // --- FONCTION UTILITAIRE POUR AFFICHER LES ERREURS ---
-    function displayError(message) {
-        const errorContainer = document.getElementById('errorMessageContainer');
-        const errorText = document.getElementById('errorMessageText');
-
-        // S'assure que les conteneurs existent avant de les utiliser
-        if (errorContainer && errorText) {
-            errorText.textContent = message;
-            errorContainer.style.display = 'flex'; // 'flex' car nous avons une icône et du texte
-        }
-    }
-
-    // --- FONCTION UTILITAIRE POUR MASQUER LES ERREURS ---
-    function hideError() {
-        const errorContainer = document.getElementById('errorMessageContainer');
-        if (errorContainer) {
-            errorContainer.style.display = 'none';
-        }
-    }
-
     function redirectToDashboard(role) {
         if (role === 'ADMIN') {
             window.location.href = '/admin.html';
@@ -33,21 +13,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // === GESTION DE L'INSCRIPTION (signup.html) ===
+    function displayError(message) {
+        const errorContainer = document.getElementById('errorMessageContainer');
+        const errorText = document.getElementById('errorMessageText');
+        if (errorContainer && errorText) {
+            // Remplacer les sauts de ligne (\n) par des balises <br> pour l'affichage en HTML
+            errorText.innerHTML = message.replace(/\n/g, '<br>');
+            errorContainer.style.display = 'flex';
+        }
+    }
+
+    function hideError() {
+        const errorContainer = document.getElementById('errorMessageContainer');
+        if (errorContainer) {
+            errorContainer.style.display = 'none';
+        }
+    }
+
+    // =======================================================
+    // == GESTION DE L'INSCRIPTION (signup.html) - VERSION FINALE SIMPLIFIÉE
+    // =======================================================
     const signupForm = document.getElementById('signupForm');
     if (signupForm) {
-        
-
         signupForm.addEventListener('submit', function(event) {
             event.preventDefault();
             hideError();
-            const name = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const company = document.getElementById('company').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const role = document.getElementById('role').value;
-            const registerData = { name, lastName, company, email, password, role };
+
+            const registerData = {
+                name: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                company: document.getElementById('company').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                role: document.getElementById('role').value
+            };
 
             fetch('/api/auth/register', {
                 method: 'POST',
@@ -55,23 +54,46 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(registerData)
             })
             .then(response => {
-                if (!response.ok) { return response.json().then(err => { throw new Error(err.message || 'Erreur lors de l\'inscription.'); }); }
+                if (!response.ok) {
+                    return response.json().then(errorBody => { throw { status: response.status, body: errorBody }; });
+                }
                 return response.json();
             })
             .then(data => {
                 window.location.href = '/login.html';
             })
             .catch(error => {
-                console.error('Erreur technique:', error.message);
-                displayError('Une erreur est survenue lors de l\'inscription. Veuillez réessayer.');
+                console.error('Erreur interceptée:', error);
+
+                // --- NOUVELLE LOGIQUE D'AFFICHAGE SIMPLIFIÉE ---
+                if (error && error.body) {
+                    const errorBody = error.body;
+
+                    if (errorBody.message) {
+                        // Cas 1: Erreur métier générale (ex: "Email already exists")
+                        displayError(errorBody.message);
+                    } else {
+                        // Cas 2: Erreurs de validation de champ
+                        // On extrait tous les messages d'erreur de l'objet
+                        const errorMessages = Object.values(errorBody);
+                        
+                        // On les joint avec un caractère de saut de ligne
+                        const formattedMessage = errorMessages.join('\n');
+                        
+                        // On affiche le tout
+                        displayError(formattedMessage);
+                    }
+                } else {
+                    // Cas 3: Erreur inattendue (réseau, etc.)
+                    displayError('Une erreur réseau est survenue. Veuillez réessayer.');
+                }
             });
         });
     }
 
-    // === GESTION DE LA CONNEXION (login.html) ===
+    // === GESTION DE LA CONNEXION (login.html) - CORRIGÉ ===
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
-
         loginForm.addEventListener('submit', function(event) {
             event.preventDefault();
             hideError();
@@ -101,6 +123,8 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Erreur technique:', error.message);
+                // On affiche le message d'erreur spécifique du backend
+                // Mais pour le login, il est plus sûr d'afficher un message générique
                 displayError('L\'adresse email ou le mot de passe est incorrect.');
             });
         });
