@@ -3,13 +3,30 @@
 **.jar
 **.war
 
+# Java
+*.class
+*.ear
+*.nar
+
+# Maven
+.mvn/
+.mvn/wrapper/maven-wrapper.jar
+
 # Fichiers IDE
 .idea/
 *.iml
+.classpath
+.project
+.settings/
 .vscode/
 
 # Fichiers système
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
 
 # Données Docker (volumes)
@@ -18,3 +35,4 @@ miniodata/
 
 # Logs
 *.log
+logs/
