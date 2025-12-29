@@ -1,0 +1,54 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      # Enable Eureka discovery
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+      # MANUAL ROUTES (This is the fix)
+      routes:
+        # Route 1: Auth Service
+        # Maps localhost:8080/auth/... -> AUTH-SERVICE
+        - id: auth-service-route
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**, api/images/**
+
+        - id: comment-service-route
+          uri: lb://COMMENT-SERVICE
+          predicates:
+             - Path=/api/v1/comments/**, /api/v1/comment-history/**
+        # Route 2: Core/Evidence Service
+        # Maps localhost:8080/core/... -> CORE-SERVICE
+        - id: core-service-route
+          uri: lb://CORE-SERVICE
+          predicates:
+            - Path=/core/**, /evidence/**, /files/**
+
+
+        - id: notification-service
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path=/notifications/**
+
+
+      # CORS CONFIGURATION (Crucial for Frontend)
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/

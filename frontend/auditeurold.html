@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>XIso - Interface Auditeur ISO 27001</title>
+    <style>
+        :root {
+          --primary-color: #7c3aed;
+          --primary-dark: #6d28d9;
+          --secondary-color: #2563eb;
+          --success-color: #10b981;
+          --warning-color: #f59e0b;
+          --danger-color: #ef4444;
+          --info-color: #3b82f6;
+
+          --bg-dark: #0f172a;
+          --bg-card: #1e293b;
+          --bg-card-light: #334155;
+          --bg-hover: #2d3748;
+
+          --text-primary: #f8fafc;
+          --text-secondary: #cbd5e1;
+          --text-muted: #94a3b8;
+
+          --border-color: #475569;
+          --border-radius: 8px;
+          --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+
+          --font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: var(--font-family);
+          background-color: var(--bg-dark);
+          color: var(--text-primary);
+          line-height: 1.6;
+          min-height: 100vh;
+        }
+
+        .header {
+          background-color: var(--bg-card);
+          border-bottom: 1px solid var(--border-color);
+          padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+        }
+
+        .logo {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--primary-color);
+        }
+
+        .logo-icon {
+          background-color: var(--primary-color);
+          color: white;
+          width: 36px;
+          height: 36px;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+        }
+
+        .nav-menu {
+          display: flex;
+          gap: 1.5rem;
+          list-style: none;
+        }
+
+        .nav-menu a {
+          color: var(--text-secondary);
+          text-decoration: none;
+          padding: 0.5rem 1rem;
+          border-radius: var(--border-radius);
+          transition: all 0.2s;
+          font-weight: 500;
+        }
+
+        .nav-menu a.active {
+          background-color: var(--primary-color);
+          color: white;
+        }
+
+        .nav-menu a:hover:not(.active) {
+          background-color: var(--bg-hover);
+          color: var(--text-primary);
+        }
+
+        .header-right {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .user-profile {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.5rem 1rem;
+          background-color: var(--bg-card-light);
+          border-radius: var(--border-radius);
+        }
+
+        .user-avatar {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: bold;
+          color: white;
+        }
+
+        .main-container {
+          display: flex;
+          min-height: calc(100vh - 72px);
+        }
+
+        .sidebar {
+          width: 280px;
+          background-color: var(--bg-card);
+          border-right: 1px solid var(--border-color);
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .main-content {
+          flex: 1;
+          padding: 2rem;
+          overflow-y: auto;
+        }
+
+        .card {
+          background-color: var(--bg-card);
+          border-radius: var(--border-radius);
+          border: 1px solid var(--border-color);
+          padding: 1.5rem;
+          box-shadow: var(--shadow);
+          margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .card-subtitle {
+          font-size: 0.875rem;
+          color: var(--text-muted);
+          margin-top: 0.25rem;
+        }
+
+        .stats-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 2rem;
+        }
+
+        .stat-card {
+          background-color: var(--bg-card);
+          border-radius: var(--border-radius);
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          border: 1px solid var(--border-color);
+        }
+
+        .stat-value {
+          font-size: 2rem;
+          font-weight: 700;
+          margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+          color: var(--text-muted);
+        }
+
+        .stat-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 0.75rem;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+          width: fit-content;
+        }
+
+        .badge-pending {
+          background-color: rgba(59, 130, 246, 0.2);
+          color: var(--info-color);
+        }
+
+        .badge-validated {
+          background-color: rgba(16, 185, 129, 0.2);
+          color: var(--success-color);
+        }
+
+        .badge-rejected {
+          background-color: rgba(239, 68, 68, 0.2);
+          color: var(--danger-color);
+        }
+
+        .btn {
+          padding: 0.75rem 1.5rem;
+          border-radius: var(--border-radius);
+          border: none;
+          font-weight: 600;
+          font-family: var(--font-family);
+          cursor: pointer;
+          transition: all 0.2s;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+        }
+
+        .btn-primary {
+          background-color: var(--primary-color);
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+          background-color: var(--bg-card-light);
+          color: var(--text-primary);
+          border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+          background-color: var(--bg-hover);
+        }
+
+        .btn-success {
+          background-color: var(--success-color);
+          color: white;
+        }
+
+        .btn-success:hover {
+          background-color: #0da271;
+        }
+
+        .btn-danger {
+          background-color: var(--danger-color);
+          color: white;
+        }
+
+        .btn-danger:hover {
+          background-color: #dc2626;
+        }
+
+        .btn-sm {
+          padding: 0.5rem 1rem;
+          font-size: 0.85rem;
+        }
+
+        .btn-icon {
+          width: 36px;
+          height: 36px;
+          padding: 0;
+          border-radius: 50%;
+        }
+
+        .table-container {
+          overflow-x: auto;
+          border-radius: var(--border-radius);
+          border: 1px solid var(--border-color);
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 1000px;
+        }
+
+        thead {
+          background-color: var(--bg-card-light);
+        }
+
+        th {
+          padding: 1rem;
+          text-align: left;
+          font-weight: 600;
+          color: var(--text-secondary);
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+          padding: 1rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        tbody tr:hover {
+          background-color: var(--bg-hover);
+        }
+
+        tbody tr:last-child td {
+          border-bottom: none;
+        }
+
+        .actions-cell {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+        }
+
+        .status-badge {
+          display: inline-block;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-size: 0.75rem;
+          font-weight: 600;
+        }
+
+        .modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-color: rgba(0, 0, 0, 0.7);
+          z-index: 1000;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .modal.active {
+          display: flex;
+        }
+
+        .modal-content {
+          background-color: var(--bg-card);
+          border-radius: var(--border-radius);
+          width: 90%;
+          max-width: 700px;
+          max-height: 90vh;
+          overflow-y: auto;
+          padding: 2rem;
+          box-shadow: var(--shadow);
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          color: var(--text-secondary);
+          font-size: 1.5rem;
+          cursor: pointer;
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .modal-close:hover {
+          background-color: var(--bg-hover);
+        }
+
+        .form-group {
+          margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+          display: block;
+          margin-bottom: 0.5rem;
+          font-weight: 500;
+          color: var(--text-secondary);
+        }
+
+        .form-control {
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background-color: var(--bg-card-light);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius);
+          color: var(--text-primary);
+          font-family: var(--font-family);
+          font-size: 0.95rem;
+          transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+          outline: none;
+          border-color: var(--primary-color);
+        }
+
+        .evidence-detail {
+          padding: 1rem;
+          background-color: var(--bg-card-light);
+          border-radius: var(--border-radius);
+          margin-bottom: 1rem;
+        }
+
+        .evidence-detail-row {
+          display: flex;
+          padding: 0.5rem 0;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .evidence-detail-row:last-child {
+          border-bottom: none;
+        }
+
+        .evidence-detail-label {
+          font-weight: 600;
+          color: var(--text-secondary);
+          min-width: 150px;
+        }
+
+        .evidence-detail-value {
+          color: var(--text-primary);
+          flex: 1;
+        }
+
+        .quick-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .filter-buttons {
+          display: flex;
+          gap: 0.5rem;
+          flex-wrap: wrap;
+          margin-bottom: 1rem;
+        }
+
+        .filter-btn {
+          padding: 0.5rem 1rem;
+          border-radius: var(--border-radius);
+          border: 1px solid var(--border-color);
+          background-color: var(--bg-card-light);
+          color: var(--text-secondary);
+          cursor: pointer;
+          font-size: 0.875rem;
+          transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+          background-color: var(--bg-hover);
+        }
+
+        .filter-btn.active {
+          background-color: var(--primary-color);
+          color: white;
+          border-color: var(--primary-color);
+        }
+
+        @keyframes slideIn {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes slideOut {
+          from {
+            transform: translateX(0);
+            opacity: 1;
+          }
+          to {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+        }
+
+        .notification-container {
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          z-index: 10000;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          pointer-events: none;
+        }
+
+        .notification {
+          background-color: var(--success-color);
+          color: white;
+          padding: 1rem 1.5rem;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow);
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          animation: slideIn 0.3s ease;
+          pointer-events: auto;
+          min-width: 300px;
+        }
+
+        .notification.error {
+          background-color: var(--danger-color);
+        }
+
+        @media (max-width: 1024px) {
+          .main-container {
+            flex-direction: column;
+          }
+
+          .sidebar {
+            width: 100%;
+            border-right: none;
+            border-bottom: 1px solid var(--border-color);
+          }
+        }
+    </style>
+</head>
+<body>
+<header class="header">
+    <div class="logo">
+        <div class="logo-icon">X</div>
+        <span>XIso - Auditeur</span>
+    </div>
+
+    <ul class="nav-menu">
+
+        <li><a href="#">ISO 27001</a></li>
+        <li><a href="#">Rapports</a></li>
+    </ul>
+
+    <div class="header-right">
+        <div class="user-profile">
+            <div class="user-avatar">AU</div>
+            <div>
+                <div>Auditeur ISO</div>
+                <small style="color: var(--text-muted)">Audit & Validation</small>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="main-container">
+    <aside class="sidebar">
+        <div class="card">
+            <h3 class="card-title">Statistiques Audit</h3>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingCount">0</div>
+                <div class="stat-label">En Attente de Validation</div>
+                <div class="stat-badge badge-pending">EN_ATTENTE</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="validatedCount">0</div>
+                <div class="stat-label">Validées</div>
+                <div class="stat-badge badge-validated">VALIDÉE</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="rejectedCount">0</div>
+                <div class="stat-label">Refusées</div>
+                <div class="stat-badge badge-rejected">REFUSÉE</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="card-title">Actions Rapides</h3>
+            <div class="quick-actions">
+                <button class="btn btn-secondary btn-sm" onclick="loadEvidences()">
+                    <i>🔄</i> Actualiser
+                </button>
+                <button
+                        class="btn btn-secondary btn-sm"
+                        onclick="filterEvidences('EN_ATTENTE')"
+                >
+                    <i>⏳</i> Voir Preuves en Attente
+                </button>
+                <button
+                        class="btn btn-secondary btn-sm"
+                        onclick="filterEvidences('ALL')"
+                >
+                    <i>📋</i> Voir Toutes
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Validation des Preuves ISO 27001</h1>
+            <p class="card-subtitle">
+                Interface auditeur pour la revue et validation des preuves de
+                conformité
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalEvidences">0</div>
+                <div class="stat-label">Total des Preuves</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pendingEvidences">0</div>
+                <div class="stat-label">À Traiter</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="validatedToday">0</div>
+                <div class="stat-label">Validées Aujourd'hui</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="validationRate">0%</div>
+                <div class="stat-label">Taux de Validation</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="filter-buttons">
+                <button
+                        class="filter-btn active"
+                        onclick="filterEvidences('ALL')"
+                        id="filter-all"
+                >
+                    📋 Toutes
+                </button>
+                <button
+                        class="filter-btn"
+                        onclick="filterEvidences('EN_ATTENTE')"
+                        id="filter-pending"
+                >
+                    ⏳ En Attente
+                </button>
+                <button
+                        class="filter-btn"
+                        onclick="filterEvidences('VALIDEE')"
+                        id="filter-validated"
+                >
+                    ✅ Validées
+                </button>
+                <button
+                        class="filter-btn"
+                        onclick="filterEvidences('REFUSEE')"
+                        id="filter-rejected"
+                >
+                    ❌ Refusées
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Preuves à Valider</h2>
+                    <p class="card-subtitle">
+                        Tableau des preuves soumises pour audit
+                    </p>
+                </div>
+                <button class="btn btn-secondary" onclick="loadEvidences()">
+                    <i>🔄</i> Actualiser
+                </button>
+            </div>
+
+            <div class="table-container">
+                <table id="evidenceTable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Titre</th>
+                        <th>Contrôle</th>
+                        <th>Soumis le</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="evidenceTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; padding: 3rem">
+                            <div>Chargement des preuves...</div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div class="modal" id="reviewModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                Révision de la Preuve <span id="modalEvidenceId"></span>
+            </h3>
+            <button class="modal-close" onclick="closeModal('reviewModal')">
+                ×
+            </button>
+        </div>
+
+        <div id="evidenceDetails" class="evidence-detail"></div>
+
+        <div class="form-group">
+            <label class="form-label" for="reviewComment">
+                Commentaire de Révision (optionnel)
+            </label>
+            <textarea
+                    class="form-control"
+                    id="reviewComment"
+                    rows="4"
+                    placeholder="Ajoutez vos commentaires sur cette preuve..."
+            ></textarea>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 2rem">
+            <button
+                    class="btn btn-success"
+                    onclick="validateEvidence()"
+                    style="flex: 1"
+            >
+                <i>✅</i> Valider la Preuve
+            </button>
+            <button
+                    class="btn btn-danger"
+                    onclick="rejectEvidence()"
+                    style="flex: 1"
+            >
+                <i>❌</i> Refuser la Preuve
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. CONFIGURATION
+    const API_BASE_URL = 'http://localhost:8080';
+    let evidences = [];
+    let currentFilter = "ALL";
+    let currentEvidenceId = null;
+
+    // 2. INITIALIZATION
+    document.addEventListener("DOMContentLoaded", function () {
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            window.location.href = '/login.html';
+            return;
+        }
+        const role = localStorage.getItem('userRole');
+        if (role !== 'AUDITEUR') {
+            alert("Accès refusé : Vous n'avez pas les droits d'Auditeur.");
+
+            // Redirect to the correct dashboard if they are RSSI
+            if (role === 'RSSI' || role === 'USER') {
+                window.location.href = '/rssi-dashboard.html';
+            } else {
+                window.location.href = '/login.html';
+            }
+            return; // Stop execution
+        }
+        loadEvidences();
+    });
+
+    // 3. LOAD DATA
+    async function loadEvidences() {
+        const tableBody = document.getElementById("evidenceTableBody");
+        tableBody.innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 3rem;"><div>Chargement...</div></td></tr>`;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/evidence/list`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+
+            if (response.ok) {
+                evidences = await response.json();
+                renderEvidencesTable();
+                updateStats(); // <--- This function is now defined below
+            } else {
+                showError("Erreur lors du chargement des preuves");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            showError("Impossible de se connecter au serveur");
+        }
+    }
+
+    // 4. RENDER TABLE
+    function renderEvidencesTable() {
+    const tableBody = document.getElementById("evidenceTableBody");
+
+    let filteredEvidences = evidences;
+    if (currentFilter !== "ALL") {
+      filteredEvidences = evidences.filter(
+        (e) => e.status === currentFilter
+      );
+    }
+
+    if (filteredEvidences.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="6" style="text-align: center; padding: 3rem;">
+            <div>Aucune preuve trouvée pour ce filtre.</div>
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    let html = "";
+    filteredEvidences.forEach((evidence) => {
+      const date = new Date(evidence.createdAt);
+      const formattedDate = date.toLocaleDateString("fr-FR");
+      const formattedTime = date.toLocaleTimeString("fr-FR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      let statusBadge;
+      if (evidence.status === "EN_ATTENTE") {
+        statusBadge =
+          '<span class="status-badge badge-pending">EN_ATTENTE</span>';
+      } else if (evidence.status === "VALIDEE") {
+        statusBadge =
+          '<span class="status-badge badge-validated">VALIDÉE</span>';
+      } else if (evidence.status === "REFUSEE") {
+        statusBadge =
+          '<span class="status-badge badge-rejected">REFUSÉE</span>';
+      }
+
+      const reviewButton =
+        evidence.status === "EN_ATTENTE"
+          ? `<button class="btn btn-icon btn-primary" title="Réviser" onclick="openReviewModal(${evidence.id})">
+            <i>🔍</i>
+          </button>`
+          : "";
+
+      html += `
+        <tr>
+          <td>${evidence.id}</td>
+          <td>
+            <strong>${evidence.title}</strong>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">
+              ${evidence.description.substring(0, 60)}${
+        evidence.description.length > 60 ? "..." : ""
+      }
+            </div>
+          </td>
+          <td><strong>${evidence.controlId}</strong></td>
+          <td>${formattedDate}<br><small>${formattedTime}</small></td>
+          <td>${statusBadge}</td>
+          <td class="actions-cell">
+            <button class="btn btn-icon btn-secondary" title="Télécharger" onclick="downloadEvidence(${
+              evidence.id
+            })">
+              <i>⬇️</i>
+            </button>
+            ${reviewButton}
+          </td>
+        </tr>
+      `;
+    });
+
+    tableBody.innerHTML = html;
+  }
+
+    // 5. UPDATE STATISTICS (The missing function)
+    function updateStats() {
+        const total = evidences.length;
+        const pending = evidences.filter(e => e.status === "EN_ATTENTE").length;
+        const validated = evidences.filter(e => e.status === "VALIDEE").length;
+        const rejected = evidences.filter(e => e.status === "REFUSEE").length;
+
+        // Update DOM elements if they exist
+        if(document.getElementById("totalEvidences")) document.getElementById("totalEvidences").textContent = total;
+        if(document.getElementById("pendingCount")) document.getElementById("pendingCount").textContent = pending;
+        if(document.getElementById("pendingEvidences")) document.getElementById("pendingEvidences").textContent = pending;
+        if(document.getElementById("validatedCount")) document.getElementById("validatedCount").textContent = validated;
+        if(document.getElementById("rejectedCount")) document.getElementById("rejectedCount").textContent = rejected;
+
+        // Calculate Validation Rate
+        const processed = validated + rejected;
+        const rate = processed > 0 ? Math.round((validated / processed) * 100) : 0;
+        if(document.getElementById("validationRate")) document.getElementById("validationRate").textContent = rate + "%";
+    }
+    function openReviewModal(id) {
+    currentEvidenceId = id;
+    const evidence = evidences.find((e) => e.id === id);
+
+    if (!evidence) {
+      showError("Preuve non trouvée");
+      return;
+    }
+
+    document.getElementById("modalEvidenceId").textContent = id;
+    document.getElementById("reviewComment").value = "";
+
+    const date = new Date(evidence.createdAt);
+    const detailsHtml = `
+      <div class="evidence-detail-row">
+        <div class="evidence-detail-label">Titre:</div>
+        <div class="evidence-detail-value">${evidence.title}</div>
+      </div>
+      <div class="evidence-detail-row">
+        <div class="evidence-detail-label">Description:</div>
+        <div class="evidence-detail-value">${
+          evidence.description || "Aucune description"
+        }</div>
+      </div>
+      <div class="evidence-detail-row">
+        <div class="evidence-detail-label">Contrôle ISO:</div>
+        <div class="evidence-detail-value"><strong>${
+          evidence.controlId
+        }</strong></div>
+      </div>
+      <div class="evidence-detail-row">
+        <div class="evidence-detail-label">Fichier:</div>
+        <div class="evidence-detail-value">
+          <button class="btn btn-sm btn-secondary" onclick="downloadEvidence(${
+            evidence.id
+          })">
+            <i>📄</i> ${evidence.fileId}
+          </button>
+        </div>
+      </div>
+      <div class="evidence-detail-row">
+        <div class="evidence-detail-label">Soumis le:</div>
+        <div class="evidence-detail-value">${date.toLocaleString(
+          "fr-FR"
+        )}</div>
+      </div>
+      <div class="evidence-detail-row">
+        <div class="evidence-detail-label">Statut:</div>
+        <div class="evidence-detail-value">
+          <span class="status-badge badge-pending">EN_ATTENTE</span>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("evidenceDetails").innerHTML = detailsHtml;
+    openModal("reviewModal");
+  }
+
+
+    // 6. ACTIONS (Validate, Reject, Download)
+        async function validateEvidence() {
+        if (!currentEvidenceId) return;
+        if (!confirm("Confirmer la validation ?")) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/evidence/${currentEvidenceId}/validate`, {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+
+            if (response.ok) {
+                showSuccess("Preuve validée avec succès");
+                closeModal("reviewModal");
+                loadEvidences();
+            } else {
+                showError("Erreur lors de la validation");
+            }
+        } catch (error) {
+            showError("Erreur de connexion");
+        }
+    }
+
+    async function rejectEvidence() {
+        if (!currentEvidenceId) return;
+        if (!confirm("Confirmer le rejet ?")) return;
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/evidence/${currentEvidenceId}/reject`, {
+                method: "PUT",
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                }
+            });
+
+            if (response.ok) {
+                showSuccess("Preuve refusée");
+                closeModal("reviewModal");
+                loadEvidences();
+            } else {
+                showError("Erreur lors du rejet");
+            }
+        } catch (error) {
+            showError("Erreur de connexion");
+        }
+    }
+
+    async function downloadEvidence(id) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/evidence/${id}/download`, {
+                headers: { 'Authorization': `Bearer ${localStorage.getItem('authToken')}` }
+            });
+
+            if (response.ok) {
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.style.display = "none";
+                a.href = url;
+                a.download = `evidence_${id}`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } else {
+                showError("Erreur de téléchargement");
+            }
+        } catch (error) {
+            showError("Erreur de connexion");
+        }
+    }
+
+    // 7. UI HELPERS
+    function filterEvidences(status) {
+        currentFilter = status;
+        document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
+
+        // Simple mapping for button active state
+        const map = { 'ALL': 'filter-all', 'EN_ATTENTE': 'filter-pending', 'VALIDEE': 'filter-validated', 'REFUSEE': 'filter-rejected' };
+        const btnId = map[status];
+        if(btnId && document.getElementById(btnId)) document.getElementById(btnId).classList.add("active");
+
+        renderEvidencesTable();
+    }
+
+    function openReviewModal(id) {
+        currentEvidenceId = id;
+        const evidence = evidences.find(e => e.id === id);
+        if (!evidence) return;
+
+        if(document.getElementById("modalEvidenceId")) document.getElementById("modalEvidenceId").textContent = id;
+        if(document.getElementById("reviewComment")) document.getElementById("reviewComment").value = "";
+
+        // Populate Details
+        const detailsContainer = document.getElementById("evidenceDetails");
+        if(detailsContainer) {
+            detailsContainer.innerHTML = `
+                <div class="evidence-detail-row"><div class="evidence-detail-label">Titre:</div><div>${evidence.title}</div></div>
+                <div class="evidence-detail-row"><div class="evidence-detail-label">Description:</div><div>${evidence.description || '-'}</div></div>
+                <div class="evidence-detail-row"><div class="evidence-detail-label">Contrôle:</div><div><strong>${evidence.controlId}</strong></div></div>
+            `;
+        }
+
+        openModal("reviewModal");
+    }
+
+    function openModal(id) {
+        const el = document.getElementById(id);
+        if(el) el.classList.add('active');
+    }
+
+    function closeModal(id) {
+        const el = document.getElementById(id);
+        if(el) el.classList.remove('active');
+    }
+
+    function showError(msg) { alert("❌ " + msg); }
+    function showSuccess(msg) { alert("✅ " + msg); }
+</script>
+</body>
+</html>

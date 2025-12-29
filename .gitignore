@@ -1,0 +1,20 @@
+# Fichiers compilés Maven
+**/target/
+**.jar
+**.war
+
+# Fichiers IDE
+.idea/
+*.iml
+.vscode/
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Données Docker (volumes)
+pgdata/
+miniodata/
+
+# Logs
+*.log

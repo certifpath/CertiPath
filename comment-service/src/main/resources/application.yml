@@ -1,0 +1,41 @@
+server:
+  port: 8082 # Keep this
+spring:
+  application:
+    name: comment-service
+  
+  datasource:
+    url: jdbc:postgresql://localhost:5432/audit_comments_db
+    username: postgres
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: update  # Laisser Hibernate gérer les schémas
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  
+  sql:
+    init:
+      mode: never  # ⬅️ Désactiver l'exécution de schema.sql
+      # schema-locations et data-locations ne seront pas utilisés
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# JWT SECRET (Must match Auth Service EXACTLY)
+jwt:
+  secret: 73fc3c485024a50737caa994f71d652c3edc763c0401f4cedd837693a020d1a3
+
+logging:
+  level:
+    root: INFO
+    com.audit.comments: DEBUG

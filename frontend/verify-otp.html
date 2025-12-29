@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vérification Requise</title>
+    <script src="js/guard.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        .auth-container {
+            display: flex;             
+            justify-content: center;   
+            align-items: center;       
+            min-height: 100vh;         
+            padding: 20px;             
+        }
+    </style>
+</head>
+<body class="auth-page dark-theme">
+    <div class="auth-container">
+        <div class="auth-card">
+            <h3>Vérification Requise</h3>
+            <p>Veuillez entrer le code de votre application d'authentification.</p>
+            
+            <div class="form-group">
+                <label for="otpCode">Code à 6 chiffres</label>
+                <input type="text" id="otpCode" maxlength="6" placeholder="123456" class="otp-input" />
+            </div>
+
+            <div id="errorMessageContainer" class="error-message-box" style="display: none;">
+                <span id="errorMessageText"></span>
+            </div>
+
+            <button type="button" id="loginWithOtpBtn" class="btn btn-primary btn-full">Se connecter</button>
+        </div>
+    </div>
+    
+
+    <!-- Script principal pour la logique de la page -->
+    <script src="js/auth.js"></script>
+</body>
+</html>

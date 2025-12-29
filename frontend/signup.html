@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Créer un compte - X Iso</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body class="auth-page dark-theme">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <a href="index.html" class="logo">
+            <i class="fas fa-shield-alt"></i> X Iso
+          </a>
+          <h1>Créer votre compte</h1>
+          <p>Rejoignez notre plateforme de gestion de conformité</p>
+        </div>
+
+        <form id="signupForm" class="auth-form">
+          <div class="form-group">
+            <label for="firstName"> <i class="fas fa-user"></i> Prénom </label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              required
+              placeholder="Votre prénom"
+            />
+            <div class="error-message" id="nameError"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName"> <i class="fas fa-user"></i> Nom </label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              required
+              placeholder="Votre nom de famille"
+            />
+            <div class="error-message" id="lastNameError"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="company">
+              <i class="fas fa-building"></i> Société
+            </label>
+            <input
+              type="text"
+              id="company"
+              name="company"
+              placeholder="Société / Organisation (optionnel)"
+            />
+            <div class="error-message" id="companyError"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">
+              <i class="fas fa-envelope"></i> Adresse email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="votre@email.com"
+            />
+            <div class="error-message" id="emailError"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">
+              <i class="fas fa-lock"></i> Créer un mot de passe
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              placeholder="Créez un mot de passe sécurisé"
+            />
+            <div class="error-message" id="passwordError"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">
+              <i class="fas fa-lock"></i> Confirmer le mot de passe
+            </label>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              required
+              placeholder="Confirmez votre mot de passe"
+            />
+            <div class="error-message" id="confirmError"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="role"> <i class="fas fa-user-tag"></i> Rôle </label>
+            <select id="role" name="role" required>
+              <option value="">Sélectionnez votre rôle</option>
+              <option value="RSSI">RSSI</option>
+              <option value="AUDITEUR">Auditeur</option>
+              <option value="USER">Utilisateur</option>
+            </select>
+            <div class="error-message" id="roleError"></div>
+            <div class="role-description" id="roleDescription">
+              <p>
+                Choisissez le rôle qui correspond à votre fonction dans le
+                processus de conformité.
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="terms" name="terms" required />
+            <label for="terms">
+              J'accepte les <a href="#">conditions d'utilisation</a> et la
+              <a href="#">politique de confidentialité</a>
+            </label>
+          </div>
+
+          <div class="form-group checkbox-group">
+            <input type="checkbox" id="newsletter" name="newsletter" />
+            <label for="newsletter">
+              Je souhaite recevoir les actualités sur la conformité et les mises
+              à jour de la plateforme
+            </label>
+          </div>
+          
+          <div id="errorMessageContainer" class="error-message-box" style="display: none;">
+              <i class="fas fa-exclamation-circle"></i>
+              <span id="errorMessageText"></span>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" id="submitBtn">
+            <span class="btn-text">Créer mon compte</span>
+            <div class="btn-loader" id="btnLoader">
+              <div class="spinner"></div>
+            </div>
+          </button>
+
+          <div class="auth-divider">
+            <span>Ou s'inscrire avec</span>
+          </div>
+
+          <div class="social-auth">
+            <!-- Redirects to backend OAuth start routes. Backend must implement these endpoints. -->
+            <a class="btn btn-social btn-google" href="/api/auth/oauth/google">
+              <i class="fab fa-google"></i> S'inscrire / Se connecter avec
+              Google
+            </a>
+            <a
+              class="btn btn-social btn-microsoft"
+              href="/api/auth/oauth/microsoft"
+            >
+              <i class="fab fa-microsoft"></i> S'inscrire / Se connecter avec
+              Microsoft
+            </a>
+          </div>
+        </form>
+
+        <div class="auth-footer">
+          <p>Déjà un compte ? <a href="login.html">Se connecter</a></p>
+        </div>
+      </div>
+
+      <div class="auth-background">
+        <div class="background-shapes">
+          <div class="shape shape-1"></div>
+          <div class="shape shape-2"></div>
+          <div class="shape shape-3"></div>
+        </div>
+        <div class="features-list">
+          <h3>Pourquoi rejoindre X Iso ?</h3>
+          <div class="feature-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Gestion multi-normes (PCI DSS, NIST, ANSSI)</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Analyse de risque (EBIOS RM, MEHARI, OCTAVE)</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Modèle Zero Trust intégré</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Collaboration RSSI/Auditeurs</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check-circle"></i>
+            <span>Tableaux de bord temps réel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+  </body>
+</html>
