@@ -66,14 +66,11 @@ Le projet suit une architecture distribuée stricte, conteneurisée avec Docker 
 *   Git.
 
 ### 1. Cloner le projet
-```bash
 git clone https://github.com/VOTRE_NOM/CertiPath-Microservices.git
-cd CertiPath-Microservices
+cd CertiPath
 
-2. Lancer l'application
+## 2. Lancer l'application
 Le projet utilise un fichier docker-compose.yml unique pour orchestrer tous les services.
-code
-Bash
 # Construire les images et lancer les conteneurs en arrière-plan
 docker-compose up --build -d
 ☕ Patientez quelques minutes lors du premier lancement. Maven doit télécharger les dépendances et compiler les 5 microservices Java.
