@@ -75,7 +75,7 @@ Le projet utilise un fichier docker-compose.yml unique pour orchestrer tous les 
 docker-compose up --build -d
 ☕ Patientez quelques minutes lors du premier lancement. Maven doit télécharger les dépendances et compiler les 5 microservices Java.
 Vous pouvez suivre l'avancement avec : docker-compose logs -f
-3. Accéder à l'application
+## 3. Accéder à l'application
 Une fois que tous les services sont "UP" :
 👉 Interface Utilisateur : http://localhost:3000
 🛠️ Eureka Dashboard : http://localhost:8761
@@ -98,7 +98,7 @@ Ouvrez la modale, ajoutez un commentaire et cliquez sur "Valider".
 Notification :
 Retournez sur la session RSSI.
 Cliquez sur la cloche 🔔 : vous verrez la confirmation de validation.
-🛠️ Structure du Projet
+## 🛠️ Structure du Projet
 code
 Text
 /
