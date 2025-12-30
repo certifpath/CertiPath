@@ -1,0 +1,179 @@
+name: Unified Shift-Left DevSecOps CI
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ] # Ajout de develop si vous l'utilisez
+  push:
+    branches: [ "main" ] # Pour scanner quand on push/merge sur main
+  workflow_dispatch: # Pour lancer manuellement si besoin
+
+permissions:
+  contents: read
+  security-events: write # Obligatoire pour CodeQL et Trivy
+  actions: read
+  checks: write
+
+env:
+  IMAGE_NAME: local-secure-image
+
+jobs:
+  # ==============================================================================
+  # JOB 1 — CONTEXT DETECTION
+  # ==============================================================================
+  detect-context:
+    runs-on: ubuntu-latest
+    outputs:
+      java-version: ${{ steps.java.outputs.version }}
+      has-frontend: ${{ steps.front.outputs.present }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Java Version from pom.xml
+        id: java
+        run: |
+          # Cherche la version dans le pom, sinon par défaut 17
+          if [ -f pom.xml ]; then
+            VERSION=$(grep -m1 "<java.version>" pom.xml | sed 's/[^0-9]*//g')
+            if [ -z "$VERSION" ]; then
+               VERSION=$(grep -m1 "<maven.compiler.source>" pom.xml | sed 's/[^0-9]*//g')
+            fi
+          fi
+          # Fallback à 17 si rien n'est trouvé
+          echo "version=${VERSION:-17}" >> $GITHUB_OUTPUT
+          echo "Java version detected: ${VERSION:-17}"
+
+      - name: Detect Frontend (Package.json detection)
+        id: front
+        run: |
+          # Detection plus robuste via package.json
+          if [ -f "package.json" ]; then
+            echo "present=true" >> $GITHUB_OUTPUT
+          else
+            echo "present=false" >> $GITHUB_OUTPUT
+          fi
+
+  # ==============================================================================
+  # JOB 2 — SCA + BUILD + TEST
+  # ==============================================================================
+  build-test:
+    needs: detect-context
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java ${{ needs.detect-context.outputs.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ needs.detect-context.outputs.java-version }}
+          distribution: temurin
+          cache: maven
+
+      # SCA (Trivy) - On scanne les dépendances AVANT de compiler
+      - name: SCA — Dependency Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: table
+          severity: CRITICAL,HIGH
+          exit-code: 1 # Bloque la pipeline si failles critiques
+
+      - name: Build & Unit Tests
+        run: mvn clean verify # 'verify' lance test + package + integration tests
+
+      # Sauvegarde du JAR pour les étapes suivantes
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
+          retention-days: 1
+
+  # ==============================================================================
+  # JOB 3 — SAST (Java + JavaScript)
+  # ==============================================================================
+  sast:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java, javascript
+
+      # CodeQL a besoin de voir la compilation pour le Java
+      - name: Build for CodeQL
+        run: mvn clean package -DskipTests
+
+      - name: Analyze CodeQL
+        uses: github/codeql-action/analyze@v3
+
+  # ==============================================================================
+  # JOB 4 — CONTAINER BUILD + SCAN
+  # ==============================================================================
+  container-security:
+    needs: sast # On attend que le SAST soit vert
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # On récupère le JAR construit à l'étape 2
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target
+
+      - name: Build Docker Image
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Container Vulnerability Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: table
+          severity: CRITICAL,HIGH
+          exit-code: 1 # Bloque si l'image de base est vulnérable
+
+  # ==============================================================================
+  # JOB 5 — DAST (Runtime Scan)
+  # ==============================================================================
+  dast:
+    needs: container-security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17' # Java pour lancer le runner localement
+          distribution: temurin
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target
+
+      - name: Start Application Locally
+        run: |
+          # Lancement en tâche de fond (&)
+          nohup java -jar target/*.jar > app.log 2>&1 &
+          
+          echo "Waiting for application to start..."
+          # Boucle d'attente (Health Check) - Timeout après 60s
+          timeout 60s bash -c 'until curl -s http://localhost:8080/actuator/health || curl -s http://localhost:8080/login; do sleep 5; done'
+          
+          echo "Application is UP!"
+
+      - name: Display Logs (Debug)
+        if: failure()
+        run: cat app.log
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0 # Mise à jour version
+        with:
+          target: http://localhost:8080
+          fail_action: true # Faire échouer la pipeline si ZAP trouve des alertes
+          cmd_options: '-a' # Inclure les règles alpha/beta pour un scan complet
