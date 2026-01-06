@@ -29,8 +29,7 @@ jobs:
       - name: Secret Scanning (Gitleaks)
         run: |
           docker run --rm -v ${{ github.workspace }}:/code zricethezav/gitleaks:latest detect --source="/code" \
-          --no-git \  
-          --verbose
+          --no-git 
 
       - name: Dockerfile Lint (Hadolint)
         uses: hadolint/hadolint-action@v3.1.0
