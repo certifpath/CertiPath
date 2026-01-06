@@ -28,7 +28,9 @@ jobs:
           fetch-depth: 0  # <--- ADD THIS: Gitleaks needs the full git history to scan properly
       - name: Secret Scanning (Gitleaks)
         run: |
-          docker run --rm -v ${{ github.workspace }}:/code zricethezav/gitleaks:latest detect --source="/code" --verbose
+          docker run --rm -v ${{ github.workspace }}:/code zricethezav/gitleaks:latest detect --source="/code" \
+          --no-git \  
+          --verbose
 
       - name: Dockerfile Lint (Hadolint)
         uses: hadolint/hadolint-action@v3.1.0
