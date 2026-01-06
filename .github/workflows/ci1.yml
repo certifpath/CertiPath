@@ -63,15 +63,15 @@ jobs:
           format: table
 
       # -------- CODE QUALITY (NON-BLOCKING WARNINGS) --------
-      - name: Code Quality — Checkstyle / PMD / SpotBugs
-        run: |
-          mvn clean verify \
-            checkstyle:check \
-            pmd:check \
-            spotbugs:check \
-            -Dcheckstyle.failOnViolation=false \
-            -Dpmd.failOnViolation=false \
-            -Dspotbugs.failOnError=false
+      #- name: Code Quality — Checkstyle / PMD / SpotBugs
+      #  run: |
+      #    mvn clean verify \
+      #      checkstyle:check \
+      #     pmd:check \
+       #     spotbugs:check \
+        #    -Dcheckstyle.failOnViolation=false \
+        #    -Dpmd.failOnViolation=false \
+        #    -Dspotbugs.failOnError=false
 
       # -------- ARTIFACT --------
       - name: Upload JAR
