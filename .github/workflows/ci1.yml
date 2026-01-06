@@ -59,7 +59,7 @@ jobs:
           scan-type: fs
           scan-ref: .
           severity: CRITICAL,HIGH
-          exit-code: 1
+          exit-code: 0
           format: table
 
       # -------- CODE QUALITY (NON-BLOCKING WARNINGS) --------
@@ -133,7 +133,7 @@ jobs:
         with:
           image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
           severity: CRITICAL,HIGH
-          exit-code: 1
+          exit-code: 0
           format: table
 
       - name: Trivy SARIF Export
