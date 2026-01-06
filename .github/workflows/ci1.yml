@@ -1,0 +1,203 @@
+name: Unified Shift-Left DevSecOps CI
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+  push:
+    branches: [ "file-storage-service" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  checks: write
+
+env:
+  IMAGE_NAME: local-secure-image
+
+# ==============================================================================
+# JOB 1 — CONTEXT DETECTION
+# ==============================================================================
+jobs:
+  detect-context:
+    runs-on: ubuntu-latest
+    outputs:
+      java-version: ${{ steps.java.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Detect Java Version from pom.xml
+        id: java
+        run: |
+          VERSION=17
+          if [ -f pom.xml ]; then
+            V=$(grep -m1 "<java.version>" pom.xml | sed 's/[^0-9]*//g')
+            [ -n "$V" ] && VERSION=$V
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+# ==============================================================================
+# JOB 2 — SECRET & DOCKERFILE SCANNING
+# ==============================================================================
+  pre-security:
+    needs: detect-context
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Secret Scanning (Gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          fail: true
+
+      - name: Dockerfile Lint (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+
+# ==============================================================================
+# JOB 3 — SCA + BUILD + QUALITY + TESTS
+# ==============================================================================
+  build-test-quality:
+    needs: pre-security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ needs.detect-context.outputs.java-version }}
+          distribution: temurin
+          cache: maven
+
+      # -------- SCA --------
+      - name: SCA — Dependency Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          severity: CRITICAL,HIGH
+          exit-code: 1
+          format: table
+
+      # -------- CODE QUALITY (NON-BLOCKING WARNINGS) --------
+      - name: Code Quality — Checkstyle / PMD / SpotBugs
+        run: |
+          mvn clean verify \
+            checkstyle:check \
+            pmd:check \
+            spotbugs:check \
+            -Dcheckstyle.failOnViolation=false \
+            -Dpmd.failOnViolation=false \
+            -Dspotbugs.failOnError=false
+
+      # -------- ARTIFACT --------
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: target/*.jar
+          retention-days: 7
+
+      - name: Upload Quality Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: quality-reports
+          path: |
+            target/checkstyle-result.xml
+            target/pmd.xml
+            target/spotbugsXml.xml
+          retention-days: 7
+
+# ==============================================================================
+# JOB 4 — SAST (CODEQL)
+# ==============================================================================
+  sast:
+    needs: build-test-quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Build for CodeQL
+        run: mvn clean package -DskipTests
+
+      - name: Analyze CodeQL
+        uses: github/codeql-action/analyze@v3
+
+# ==============================================================================
+# JOB 5 — CONTAINER BUILD + SCAN
+# ==============================================================================
+  container-security:
+    needs: sast
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target
+
+      - name: Build Docker Image
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Container Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          exit-code: 1
+          format: table
+
+      - name: Trivy SARIF Export
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+# ==============================================================================
+# JOB 6 — DAST (OWASP ZAP)
+# ==============================================================================
+  dast:
+    needs: container-security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target
+
+      - name: Start Application
+        run: |
+          nohup java -jar target/*.jar > app.log 2>&1 &
+          timeout 60s bash -c 'until curl -s http://localhost:8080; do sleep 5; done'
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: http://localhost:8080
+          fail_action: true
+          cmd_options: '-a'
