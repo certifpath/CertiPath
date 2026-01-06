@@ -17,31 +17,10 @@ env:
   IMAGE_NAME: local-secure-image
 
 # ==============================================================================
-# JOB 1 — CONTEXT DETECTION
+# JOB 1 — SECRET & DOCKERFILE SCANNING
 # ==============================================================================
 jobs:
-  detect-context:
-    runs-on: ubuntu-latest
-    outputs:
-      java-version: ${{ steps.java.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Detect Java Version from pom.xml
-        id: java
-        run: |
-          VERSION=17
-          if [ -f pom.xml ]; then
-            V=$(grep -m1 "<java.version>" pom.xml | sed 's/[^0-9]*//g')
-            [ -n "$V" ] && VERSION=$V
-          fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
-# ==============================================================================
-# JOB 2 — SECRET & DOCKERFILE SCANNING
-# ==============================================================================
   pre-security:
-    needs: detect-context
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +37,7 @@ jobs:
           failure-threshold: error
 
 # ==============================================================================
-# JOB 3 — SCA + BUILD + QUALITY + TESTS
+# JOB 2 — SCA + BUILD + QUALITY + TESTS
 # ==============================================================================
   build-test-quality:
     needs: pre-security
@@ -69,7 +48,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ needs.detect-context.outputs.java-version }}
+          java-version: '21'
           distribution: temurin
           cache: maven
 
@@ -113,7 +92,7 @@ jobs:
           retention-days: 7
 
 # ==============================================================================
-# JOB 4 — SAST (CODEQL)
+# JOB 3 — SAST (CODEQL)
 # ==============================================================================
   sast:
     needs: build-test-quality
@@ -133,7 +112,7 @@ jobs:
         uses: github/codeql-action/analyze@v3
 
 # ==============================================================================
-# JOB 5 — CONTAINER BUILD + SCAN
+# JOB 4 — CONTAINER BUILD + SCAN
 # ==============================================================================
   container-security:
     needs: sast
@@ -171,7 +150,7 @@ jobs:
           sarif_file: trivy-results.sarif
 
 # ==============================================================================
-# JOB 6 — DAST (OWASP ZAP)
+# JOB 5 — DAST (OWASP ZAP)
 # ==============================================================================
   dast:
     needs: container-security
@@ -182,7 +161,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: temurin
 
       - uses: actions/download-artifact@v4
