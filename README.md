@@ -1,4 +1,4 @@
-# File Storage Microservice
+# File Storage Microservice 
 
 A lightweight Spring Boot microservice that provides file upload, download, listing, and deletion backed by MinIO and PostgreSQL.
 
