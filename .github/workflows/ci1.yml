@@ -12,7 +12,7 @@ permissions:
   security-events: write
   actions: read
   checks: write
-
+  #
 env:
   IMAGE_NAME: local-secure-image
 
