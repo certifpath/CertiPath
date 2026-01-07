@@ -1,0 +1,379 @@
+name: Unified Shift-Left DevSecOps CI
+
+on:
+  pull_request:
+    branches: [ "main", "develop" ]
+  push:
+    branches: [ "file-storage-service" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  checks: write
+  #
+env:
+  IMAGE_NAME: local-secure-image
+
+# ==============================================================================
+# JOB 1 — SECRET & DOCKERFILE SCANNING
+# ==============================================================================
+jobs:
+  pre-security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # <--- ADD THIS: Gitleaks needs the full git history to scan properly
+      - name: Secret Scanning (Gitleaks)
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/code zricethezav/gitleaks:latest detect --source="/code" \
+          --no-git 
+
+      - name: Dockerfile Lint (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          failure-threshold: error
+# ==============================================================================
+# JOB 2 — SCA 
+# ==============================================================================
+  sca:
+    name: SCA — Dependency Vulnerability Scan
+    needs: pre-security
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout source code
+       uses: actions/checkout@v4
+
+    # -------------------------------
+    # SCA — Console output (readable)
+    # -------------------------------
+     - name: SCA 
+       uses: aquasecurity/trivy-action@master
+       with:
+        scan-type: fs
+        scan-ref: .
+        severity: CRITICAL,HIGH
+        exit-code: 0          # Non bloquant (shift-left)
+        format: table
+
+    # --------------------------------
+    # SCA — SARIF export (Security tab)
+    # --------------------------------
+     - name: SCA — Trivy SARIF Report
+       uses: aquasecurity/trivy-action@master
+       with:
+        scan-type: fs
+        scan-ref: .
+        severity: CRITICAL,HIGH
+        exit-code: 0
+        format: sarif
+        output: trivy-sca-results.sarif
+
+     - name: Upload SCA results to GitHub Security
+       uses: github/codeql-action/upload-sarif@v3
+       with:
+        sarif_file: trivy-sca-results.sarif
+
+
+# ==============================================================================
+# JOB 3 — Build
+# ==============================================================================
+
+  build-test:
+    name: Build & Package Application
+    needs: sca
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout source code
+       uses: actions/checkout@v4
+
+     - name: Set up Java
+       uses: actions/setup-java@v4
+       with:
+        java-version: '21'
+        distribution: temurin
+        cache: maven
+
+    # ------------------------------------------------------------------
+    # CODE QUALITY — STATIC ANALYSIS (INTENTIONALLY COMMENTED)
+    # Non-blocking configuration (warnings only)
+    # ------------------------------------------------------------------
+    #- name: Code Quality — Checkstyle / PMD / SpotBugs
+    #  run: |
+    #    mvn clean verify \
+    #      checkstyle:check \
+    #      pmd:check \
+    #      spotbugs:check \
+    #      -Dcheckstyle.failOnViolation=false \
+    #      -Dpmd.failOnViolation=false \
+    #      -Dspotbugs.failOnError=false
+
+     - name: Build with Maven
+       run: mvn clean package -DskipTests
+
+    # ------------------------------------------------------------------
+    # ARTIFACTS
+    # ------------------------------------------------------------------
+     - name: Upload JAR Artifact
+       uses: actions/upload-artifact@v4
+       with:
+        name: app-jar
+        path: target/*.jar
+        retention-days: 7
+
+    # Optional — kept commented because quality tools are commented
+    #- name: Upload Code Quality Reports
+    #  uses: actions/upload-artifact@v4
+    #  with:
+    #    name: quality-reports
+    #    path: |
+    #      target/checkstyle-result.xml
+    #      target/pmd.xml
+    #      target/spotbugsXml.xml
+    #    retention-days: 7
+
+# ==============================================================================
+# JOB 3 — SAST (CODEQL)
+# ==============================================================================
+  sast:
+    needs: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+           java-version: '21'
+           distribution: temurin
+           cache: maven
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: java
+
+      - name: Build for CodeQL
+        run: mvn clean package -DskipTests
+
+      - name: Analyze CodeQL
+        uses: github/codeql-action/analyze@v3
+
+# ==============================================================================
+# JOB 4 — CONTAINER BUILD + SCAN
+# ==============================================================================
+  container-security:
+    needs: sast
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target
+
+      - name: Build Docker Image
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Container Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          severity: CRITICAL,HIGH
+          exit-code: 0
+          format: table
+
+      - name: Trivy SARIF Export
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - name: Upload Trivy SARIF
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
+# ==============================================================================
+# JOB 5 — DAST (OWASP ZAP)
+# ==============================================================================
+  # ==============================================================================
+# JOB 5 — DAST (OWASP ZAP) - VERSION DOCKER COMPLÈTE
+# ==============================================================================
+  dast:
+    needs: container-security
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: target
+
+      - name: Create Docker Network
+        run: docker network create test-network
+
+      - name: Start PostgreSQL
+        run: |
+          docker run -d \
+            --name postgres \
+            --network test-network \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=admin \
+            -e POSTGRES_DB=filedb \
+            -p 5432:5432 \
+            postgres:15-alpine
+          
+          # Attendre que PostgreSQL soit prêt
+          echo "Waiting for PostgreSQL..."
+          timeout 60s bash -c '
+            until docker exec postgres pg_isready -U postgres > /dev/null 2>&1; do
+              sleep 2
+            done
+          '
+          echo "✅ PostgreSQL is ready"
+
+      - name: Start MinIO
+        run: |
+          docker run -d \
+            --name minio \
+            --network test-network \
+            -e MINIO_ROOT_USER=minioadmin \
+            -e MINIO_ROOT_PASSWORD=minioadmin \
+            -p 9000:9000 \
+            -p 9001:9001 \
+            quay.io/minio/minio:latest \
+            server /data --console-address ":9001"
+          
+          # Attendre que MinIO soit prêt
+          echo "Waiting for MinIO..."
+          timeout 60s bash -c '
+            until curl -f -s http://localhost:9000/minio/health/live > /dev/null 2>&1; do
+              echo "MinIO not ready, waiting..."
+              sleep 3
+            done
+          '
+          echo "✅ MinIO is ready"
+
+      - name: Create MinIO Bucket
+        run: |
+          # Installer MinIO Client
+          wget -q https://dl.min.io/client/mc/release/linux-amd64/mc
+          chmod +x mc
+          
+          # Configurer l'alias
+          ./mc alias set myminio http://localhost:9000 minioadmin minioadmin
+          
+          # Créer le bucket 'evidence'
+          ./mc mb myminio/evidence --ignore-existing
+          
+          # Vérifier
+          ./mc ls myminio/
+          echo "✅ Bucket 'evidence' created"
+
+      - name: Build Application Docker Image
+        run: |
+          docker build -t file-storage-test:latest .
+
+      - name: Start Application Container
+        run: |
+          docker run -d \
+            --name file-storage-app \
+            --network test-network \
+            -p 8082:8082 \
+            -e SERVER_PORT=8082 \
+            -e SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/filedb \
+            -e SPRING_DATASOURCE_USERNAME=postgres \
+            -e SPRING_DATASOURCE_PASSWORD=admin \
+            -e MINIO_URL=http://minio:9000 \
+            -e MINIO_ACCESS_KEY=minioadmin \
+            -e MINIO_SECRET_KEY=minioadmin \
+            -e MINIO_BUCKET=evidence \
+            file-storage-test:latest
+
+      - name: Wait for Application
+        run: |
+          echo "Waiting for application to start..."
+          timeout 180s bash -c '
+            until curl -f -s http://localhost:8082/actuator/health > /dev/null 2>&1; do
+              echo "Application not ready, waiting 5s..."
+              sleep 5
+            done
+          '
+          
+          if curl -f -s http://localhost:8082/actuator/health > /dev/null 2>&1; then
+            echo "✅ Application is ready!"
+            curl -s http://localhost:8082/actuator/health | jq . || curl -s http://localhost:8082/actuator/health
+          else
+            echo "❌ Application failed to start"
+            echo "=== Container logs ==="
+            docker logs file-storage-app
+            exit 1
+          fi
+
+      - name: Verify Endpoints and Dependencies
+        run: |
+          echo "=== Testing Endpoints ==="
+          
+          echo "1. Health Check:"
+          curl -s http://localhost:8082/actuator/health || echo "Failed"
+          
+          echo -e "\n2. Files List:"
+          curl -s http://localhost:8082/files || echo "Failed"
+          
+          echo -e "\n3. PostgreSQL Status:"
+          docker exec postgres psql -U postgres -d filedb -c "SELECT 1;" || echo "Failed"
+          
+          echo -e "\n4. MinIO Status:"
+          curl -s http://localhost:9000/minio/health/live && echo "OK" || echo "Failed"
+
+      - name: Display Full Logs
+        if: always()
+        run: |
+          echo "=== Container Status ==="
+          docker ps -a
+          
+          echo -e "\n=== Application Logs ==="
+          docker logs file-storage-app --tail 200
+          
+          echo -e "\n=== PostgreSQL Logs ==="
+          docker logs postgres --tail 50
+          
+          echo -e "\n=== MinIO Logs ==="
+          docker logs minio --tail 50
+
+      - name: OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: http://localhost:8082
+          fail_action: false
+          cmd_options: '-a -j'  # -j pour format JSON
+        continue-on-error: true
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: |
+            zap-scan-report.html
+            zap-scan-report.json
+            zap-scan-report.md
+          retention-days: 7
+
+      - name: Cleanup
+        if: always()
+        run: |
+          echo "Cleaning up..."
+          docker stop file-storage-app postgres minio 2>/dev/null || true
+          docker rm file-storage-app postgres minio 2>/dev/null || true
+          docker network rm test-network 2>/dev/null || true
